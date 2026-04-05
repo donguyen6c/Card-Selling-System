@@ -1,7 +1,7 @@
 import re
 
 from flask import Flask, jsonify, request, redirect, render_template
-from flasgger import Swagger
+from flasgger import Swagger, swag_from
 from flask_login import login_user, logout_user, current_user
 
 from cardapp import dao, login, app
@@ -39,155 +39,66 @@ template = {
 
 swagger = Swagger(app, config=swagger_config, template=template)
 # ==========================================
-#CÁC ROUTE TRONG INDEX.PY
+# CÁC ROUTE TRONG INDEX.PY
 # ==========================================
+@app.route('/login')
+def login_view():
+    return render_template('login.html')
+
 @app.route('/login', methods=['POST'])
+@swag_from('docs/login.yml')
 def login_process():
-    """
-    Đăng nhập
-    ---
-    consumes:
-      - application/x-www-form-urlencoded
-    produces:
-      - application/json
-    parameters:
-      - name: username
-        in: formData
-        type: string
-        required: true
-      - name: password
-        in: formData
-        type: string
-        required: true
-    responses:
-      200:
-        description: Đăng nhập thành công
-      401:
-        description: Sai tên đăng nhập hoặc mật khẩu
-    """
     username = request.form.get('username')
     password = request.form.get('password')
 
     user = dao.auth_user(username=username, password=password)
     if user:
         login_user(user=user)
-        return jsonify({
-            "status": "success",
-            "message": "Đăng nhập thành công!",
-            "data": {
-                "user_id": user.id,
-                "username": user.username
-            }
-        }), 200
+        next_page = request.args.get('next')
+        return redirect(next_page if next_page else '/')
     else:
-        return jsonify({
-            "status": "error",
-            "message": "Tên đăng nhập hoặc mật khẩu không chính xác!"
-        }), 401
+        err_msg = "Tên đăng nhập hoặc mật khẩu không chính xác!"
+        return render_template('login.html', err_msg=err_msg)
+
+
+@app.route('/register')
+def register_view():
+    return render_template('register.html')
 
 
 @app.route('/register', methods=['POST'])
+@swag_from('docs/register.yml')
 def register_process():
-    """
-    Đăng ký
-    ---
-    consumes:
-      - multipart/form-data
-    produces:
-      - application/json
-    parameters:
-      - name: name
-        in: formData
-        type: string
-        required: true
-      - name: username
-        in: formData
-        type: string
-        required: true
-      - name: password
-        in: formData
-        type: string
-        required: true
-      - name: confirm
-        in: formData
-        type: string
-        required: true
-      - name: email
-        in: formData
-        type: string
-        required: true
-      - name: avatar
-        in: formData
-        type: file
-        required: false
-    responses:
-      201:
-        description: Đăng ký thành công
-      400:
-        description: Dữ liệu đầu vào không hợp lệ
-      500:
-        description: Lỗi hệ thống khi lưu vào cơ sở dữ liệu
-    """
     data = request.form
-
     password = data.get('password')
     confirm = data.get('confirm')
-
     if password != confirm:
-        return jsonify({
-            "status": "error",
-            "message": "Mật khẩu không khớp!"
-        }), 400
+        err_msg = 'Mật khẩu không khớp!'
+        return render_template('register.html', err_msg=err_msg)
 
     email = data.get('email')
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 
     if not email or not re.match(email_regex, email):
-        return jsonify({
-            "status": "error",
-            "message": "Email không đúng định dạng!"
-        }), 400
-
+        err_msg = 'Email không đúng định dạng!'
+        return render_template('register.html', err_msg=err_msg)
     try:
-        add_user(
-            name=data.get('name'),
-            username=data.get('username'),
-            password=password,
-            avatar=request.files.get('avatar'),
-            email=email
-        )
-        return jsonify({
-            "status": "success",
-            "message": "Đăng ký tài khoản thành công!"
-        }), 201
+        add_user(name=data.get('name'), username=data.get('username'), password=password,
+                 avatar=request.files.get('avatar'), email=data.get('email'))
+        return redirect('/login')
     except Exception as ex:
-        return jsonify({
-            "status": "error",
-            "message": f"Lỗi hệ thống: {str(ex)}"
-        }), 500
+        return render_template('register.html', err_msg=str(ex))
 
 
 @app.route('/logout')
 def logout_process():
-    """
-    Đăng xuất
-    ---
-    produces:
-      - application/json
-    responses:
-      200:
-        description: Đăng xuất thành công
-    """
     logout_user()
-    return jsonify({
-        "status": "success",
-        "message": "Đã đăng xuất khỏi hệ thống!"
-    }), 200
-
+    return redirect('/login')
 
 @login.user_loader
 def load_user(id):
     return dao.get_user_by_id(id)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
