@@ -7,6 +7,7 @@ import cloudinary.uploader
 from cardapp import db
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Conflict
+from cardapp.utils import validate_email_domain
 
 def get_user_by_id(id):
     return User.query.get(id)
@@ -19,11 +20,8 @@ def auth_user(username, password):
 def add_user(name, username, password, avatar, email):
     if not name:
         raise ValueError("Thiếu trường tên")
-    if not email:
-        raise ValueError("Thiếu trường email")
 
-    if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
-        raise ValueError("Email không hợp lệ")
+    email = validate_email_domain(email)
 
     if len(username) < 5:
         raise ValueError("Username phải ít nhất có 5 kí tự")
@@ -63,8 +61,8 @@ def add_user(name, username, password, avatar, email):
 def update_profile(user_id, name, email, avatar_file=None):
     if not name:
         raise ValueError("Tên không được để trống!")
-    if not email or not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
-        raise ValueError("Email không hợp lệ!")
+
+    email = validate_email_domain(email)
 
     user = User.query.get(user_id)
     if not user:

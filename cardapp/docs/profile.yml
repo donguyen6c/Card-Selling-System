@@ -1,28 +1,18 @@
-description: Gửi dữ liệu form để cập nhật thông tin người dùng.
-consumes:
-  - multipart/form-data
+tags:
+  - User Profile
 parameters:
   - name: name
     in: formData
     type: string
     required: true
-    description: Họ và tên mới.
   - name: email
     in: formData
     type: string
     required: true
-    description: Email mới cần cập nhật.
   - name: avatar
     in: formData
     type: file
     required: false
-    description: Ảnh đại diện (định dạng file).
 responses:
   200:
-    description: Cập nhật thành công.
-  400:
-    description: Dữ liệu không hợp lệ (tên trống, sai định dạng email).
-  409:
-    description: Email đã được sử dụng bởi người khác.
-  500:
-    description: Lỗi máy chủ (Cloudinary hoặc Database).
+    description: OK

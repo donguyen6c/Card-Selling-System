@@ -3,6 +3,9 @@
 {% block title %}Hồ sơ cá nhân - Hệ thống bán thẻ cào{% endblock %}
 
 {% block content %}
+{% if err_msg %}
+  <div class="alert alert-danger">{{ err_msg }}</div>
+{% endif %}
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -18,7 +21,7 @@
             <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
                 <div class="card-body p-5">
 
-                    <form method="put" action="/profile" enctype="multipart/form-data">
+                    <form id="profileForm" enctype="multipart/form-data">
                         <div class="row">
 
                             <div class="col-md-4 text-center mb-4 mb-md-0 border-end">
@@ -67,4 +70,5 @@
         </div>
     </div>
 </div>
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 {% endblock %}
