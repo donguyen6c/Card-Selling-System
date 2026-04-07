@@ -22,7 +22,7 @@ def add_user(name, username, password, avatar, email):
     if not email:
         raise ValueError("Thiếu trường email")
 
-    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+    if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
         raise ValueError("Email không hợp lệ")
 
     if len(username) < 5:
@@ -56,6 +56,38 @@ def add_user(name, username, password, avatar, email):
     db.session.add(u)
     try:
         db.session.commit()
-    except IntegrityError as dup:
+    except IntegrityError:
         db.session.rollback()
-        raise dup
+        raise
+
+def update_profile(user_id, name, email, avatar_file=None):
+    if not name:
+        raise ValueError("Tên không được để trống!")
+    if not email or not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+        raise ValueError("Email không hợp lệ!")
+
+    user = User.query.get(user_id)
+    if not user:
+        raise ValueError("Tài khoản không tồn tại!")
+
+    existing_email = User.query.filter(User.email == email, User.id != user_id).first()
+    if existing_email:
+        raise Conflict("Email này đã được sử dụng bởi một tài khoản khác!")
+
+    user.name = name
+    user.email = email
+
+    if avatar_file:
+        try:
+            res = cloudinary.uploader.upload(avatar_file)
+            user.avatar = res.get('secure_url')
+        except Exception as e:
+            raise Exception(f"Lỗi khi tải ảnh lên Cloudinary: {str(e)}")
+
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        db.session.rollback()
+        raise e
+
+    return True

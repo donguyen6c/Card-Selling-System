@@ -1,5 +1,3 @@
-Đăng ký
----
 consumes:
   - multipart/form-data
 produces:

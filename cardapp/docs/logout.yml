@@ -1,0 +1,7 @@
+description:
+  Yêu cầu: Phải đang ở trạng thái đăng nhập (có Session/Cookie).
+responses:
+  302:
+    description: Đăng xuất thành công và chuyển hướng (Redirect) về trang /login.
+  401:
+    description: Chưa đăng nhập nên không thể đăng xuất.

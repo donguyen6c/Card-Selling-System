@@ -1,7 +1,7 @@
 # cardapp/apis/auth_api.py
 import re
-from flask import Blueprint, request, render_template, redirect
-from flask_login import login_user, logout_user
+from flask import Blueprint, request, render_template, redirect, abort
+from flask_login import login_user, logout_user, current_user, login_required
 from flasgger import swag_from
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Conflict
@@ -64,6 +64,53 @@ def register_process():
         return render_template('register.html', err_msg=str(ex)), 500
 
 @auth_bp.route('/logout')
+@swag_from('../docs/logout.yml')
 def logout_process():
-    logout_user()
-    return redirect('/login')
+    if current_user.is_authenticated:
+        logout_user()
+        return redirect('/login')
+    abort(401)
+
+@auth_bp.route('/profile', methods=['GET'])
+@login_required
+def profile_get():
+    """
+    Hiển thị trang thông tin cá nhân
+    ---
+    responses:
+      200:
+        description: Trả về HTML trang profile
+    """
+    return render_template('profile.html')
+
+@auth_bp.route('/profile', methods=['PUT'])
+@login_required
+@swag_from('../docs/profile.yml')
+def profile_view():
+
+    name = request.form.get('name')
+    email = request.form.get('email')
+    avatar_file = request.files.get('avatar')
+
+    try:
+        dao.update_profile(current_user.id, name, email, avatar_file)
+        msg = "Cập nhật thông tin thành công!"
+        status = "success"
+        http_code = 200
+
+    except ValueError as ve:
+        msg = str(ve)
+        status = "danger"
+        http_code = 400
+
+    except (Conflict, IntegrityError) as ce:
+        msg = ce.description if isinstance(ce, Conflict) else "Email đã tồn tại!"
+        status = "danger"
+        http_code = 409
+
+    except Exception as ex:
+        msg = "Lỗi hệ thống: " + str(ex)
+        status = "danger"
+        http_code = 500
+
+    return render_template('profile.html', msg=msg, status=status), http_code
