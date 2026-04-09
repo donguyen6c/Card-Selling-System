@@ -10,9 +10,9 @@
 
             <div class="card shadow-sm border-0" style="border-radius: 8px;">
                 <div class="card-body p-4">
-                    {% if receipts and receipts|length > 0 %}
+                    {% if receipts and receipts.items|length > 0 %}
                     <div class="accordion" id="historyAccordion">
-                        {% for r in receipts %}
+                        {% for r in receipts.items %}
                         <div class="accordion-item mb-3 border" style="border-radius: 8px; overflow: hidden;">
                             <h2 class="accordion-header" id="heading-{{ r.id }}">
                                 <button class="accordion-button collapsed bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ r.id }}" aria-expanded="false" aria-controls="collapse-{{ r.id }}">
@@ -57,6 +57,37 @@
                         </div>
                         {% endfor %}
                     </div>
+                    {% if receipts.pages > 1 %}
+                    <div class="card-footer bg-white py-3 border-0">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mb-0 me-5">
+
+                                <li class="page-item {% if not receipts.has_prev %}disabled{% endif %}">
+                                    <a class="page-link" href="{{ url_for(request.endpoint, page=receipts.prev_num) }}">
+                                        <i class="bi bi-chevron-left"></i> Trước
+                                    </a>
+                                </li>
+
+                                {% for page_num in receipts.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                                    {% if page_num %}
+                                        <li class="page-item {% if page_num == receipts.page %}active{% endif %}">
+                                            <a class="page-link" href="{{ url_for(request.endpoint, page=page_num) }}">{{ page_num }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <li class="page-item {% if not receipts.has_next %}disabled{% endif %}">
+                                    <a class="page-link" href="{{ url_for(request.endpoint, page=receipts.next_num) }}">
+                                        Sau <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
                     {% else %}
                     <div class="text-center py-5 text-secondary">
                         <i class="bi bi-receipt display-1"></i>

@@ -2,7 +2,7 @@
 import re
 
 from flasgger import swag_from
-from flask import Blueprint, render_template, redirect
+from flask import Blueprint, render_template, redirect, request
 from flask_login import  current_user, login_required
 
 from cardapp import dao
@@ -15,12 +15,7 @@ history_bp = Blueprint('history', __name__)
 def history_view():
     if not current_user.is_authenticated:
         return redirect('/login?next=/history')
-
-    receipts = dao.get_receipts_by_user(current_user.id)
+    page = request.args.get('page', 1, type=int)
+    receipts = dao.get_receipts_by_user(current_user.id, page=page)
 
     return render_template('history.html', receipts=receipts)
-
-@history_bp.route('/users/current-user/transactions')
-@login_required
-def register_view():
-    return render_template('history.html')
