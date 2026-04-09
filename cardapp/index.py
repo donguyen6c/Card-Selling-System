@@ -1,7 +1,8 @@
-from flask import Flask, jsonify, request
-from flasgger import Swagger
-
-app = Flask(__name__)
+import re
+from flask import Flask, jsonify, request, redirect, render_template
+from flasgger import Swagger, swag_from
+from cardapp.apis.history_api import history_bp
+from cardapp import dao, login, app
 
 swagger_config = {
     "headers": [],
@@ -33,12 +34,16 @@ template = {
     "schemes": ["http", "https"]
 }
 
-# Khởi tạo Swagger
+# ==========================================
+# CÁC ROUTE TRONG INDEX.PY
+# ==========================================
+app.register_blueprint(history_bp)
+
 swagger = Swagger(app, config=swagger_config, template=template)
 
-# ==========================================
-#CÁC ROUTE TRONG INDEX.PY
-# ==========================================
+@login.user_loader
+def load_user(id):
+    return dao.get_user_by_id(id)
 
 if __name__ == '__main__':
     app.run(debug=True)
