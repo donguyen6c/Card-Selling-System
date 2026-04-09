@@ -9,12 +9,25 @@ from cardapp.dao import add_user
 
 inven_bp = Blueprint('inventory', __name__)
 
+
 @inven_bp.route('/users/current-user/inventory', methods=['GET'])
 @login_required
 @swag_from('../docs/inventory.yml')
 def inventory_view():
     if not current_user.is_authenticated:
         return redirect('/login?next=/inventory')
+
+    kw = request.args.get('kw')
+    from_date = request.args.get('from_date')
+    to_date = request.args.get('to_date')
     page = request.args.get('page', 1, type=int)
-    cards = dao.get_cards_by_user(current_user.id, page=page)
-    return render_template('inventory.html', cards=cards)
+
+    cards = dao.get_cards_by_user(
+        user_id=current_user.id,
+        kw=kw,
+        from_date=from_date,
+        to_date=to_date,
+        page=page
+    )
+
+    return render_template('inventory.html', cards=cards, kw=kw, from_date=from_date, to_date=to_date)
