@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request, redirect, render_template
 from flasgger import Swagger, swag_from
 from cardapp.apis.auth_api import auth_bp
 from cardapp import dao, login, app
+from cardapp.models import CardType
 
 swagger_config = {
     "headers": [],
@@ -43,7 +44,15 @@ swagger = Swagger(app, config=swagger_config, template=template)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    categories = dao.load_categories()
+    products = dao.load_products()
+    banners = dao.load_banners()
+
+    phone_categories = [p for p in categories if p.card_type == CardType.PHONE]
+    game_categories = [g for g in categories if g.card_type == CardType.GAME]
+
+    return render_template('index.html', categories=categories, products=products, banners=banners,
+                           phone_categories=phone_categories, game_categories=game_categories)
 
 @login.user_loader
 def load_user(id):
