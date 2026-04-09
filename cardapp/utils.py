@@ -1,6 +1,7 @@
 import dns.resolver
 import re
 
+CARD_DETAILS_PAGE_SIZE = 2
 
 def validate_email_domain(email):
     email = email.strip()

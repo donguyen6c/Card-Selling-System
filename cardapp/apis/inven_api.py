@@ -15,7 +15,6 @@ inven_bp = Blueprint('inventory', __name__)
 def inventory_view():
     if not current_user.is_authenticated:
         return redirect('/login?next=/inventory')
-
-    cards = dao.get_cards_by_user(current_user.id)
-
+    page = request.args.get('page', 1, type=int)
+    cards = dao.get_cards_by_user(current_user.id, page=page)
     return render_template('inventory.html', cards=cards)
