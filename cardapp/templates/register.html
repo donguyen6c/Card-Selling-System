@@ -9,20 +9,20 @@
 <div class="alert alert-danger">{{err_msg}}</div>
 {% endif %}
 
-<form method="post" action="/register" enctype="multipart/form-data">
+<form method="post" action="/users" enctype="multipart/form-data">
     <div class="form-floating mb-3 mt-3">
-        <input type="text" class="form-control" id="name" placeholder="Họ tên" name="name" required />
+        <input type="text" class="form-control" id="name" placeholder="Họ tên" name="name" required value="{{ data.get('name', '') if data else '' }}"/>
         <label for="name">Họ tên</label>
     </div>
 
 
     <div class="form-floating mb-3 mt-3">
-        <input type="text" class="form-control" id="email" placeholder="Email" name="email" required />
+        <input type="text" class="form-control" id="email" placeholder="Email" name="email" required value="{{ data.get('email', '') if data else '' }}"/>
         <label for="email">Email</label>
     </div>
 
     <div class="form-floating mb-3 mt-3">
-        <input type="text" class="form-control" id="username" placeholder="Tên đăng nhập" name="username" required />
+        <input type="text" class="form-control" id="username" placeholder="Tên đăng nhập" name="username" required value="{{ data.get('username', '') if data else '' }}"/>
         <label for="username">Tên đăng nhập</label>
     </div>
 

@@ -7,6 +7,7 @@ import cloudinary.uploader
 from cardapp import db
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Conflict
+from cardapp.utils import validate_email_domain
 
 def get_user_by_id(id):
     return User.query.get(id)
@@ -19,11 +20,8 @@ def auth_user(username, password):
 def add_user(name, username, password, avatar, email):
     if not name:
         raise ValueError("Thiếu trường tên")
-    if not email:
-        raise ValueError("Thiếu trường email")
 
-    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-        raise ValueError("Email không hợp lệ")
+    email = validate_email_domain(email)
 
     if len(username) < 5:
         raise ValueError("Username phải ít nhất có 5 kí tự")
@@ -56,6 +54,38 @@ def add_user(name, username, password, avatar, email):
     db.session.add(u)
     try:
         db.session.commit()
-    except IntegrityError as dup:
+    except IntegrityError:
         db.session.rollback()
-        raise dup
+        raise
+
+def update_profile(user_id, name, email, avatar_file=None):
+    if not name:
+        raise ValueError("Tên không được để trống!")
+
+    email = validate_email_domain(email)
+
+    user = User.query.get(user_id)
+    if not user:
+        raise ValueError("Tài khoản không tồn tại!")
+
+    existing_email = User.query.filter(User.email == email, User.id != user_id).first()
+    if existing_email:
+        raise Conflict("Email này đã được sử dụng bởi một tài khoản khác!")
+
+    user.name = name
+    user.email = email
+
+    if avatar_file:
+        try:
+            res = cloudinary.uploader.upload(avatar_file)
+            user.avatar = res.get('secure_url')
+        except Exception as e:
+            raise Exception(f"Lỗi khi tải ảnh lên Cloudinary: {str(e)}")
+
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        db.session.rollback()
+        raise e
+
+    return True

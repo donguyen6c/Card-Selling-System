@@ -1,5 +1,5 @@
-Đăng ký
----
+tags:
+  - User
 consumes:
   - multipart/form-data
 produces:
@@ -30,8 +30,8 @@ parameters:
     type: file
     required: false
 responses:
-  201:
-    description: Đăng ký thành công
+  200:
+    description: Đăng ký thành công (Not 201)
   400:
     description: Dữ liệu đầu vào không hợp lệ
   500:

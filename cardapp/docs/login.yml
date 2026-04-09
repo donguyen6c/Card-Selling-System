@@ -1,5 +1,5 @@
-Đăng nhập
----
+tags:
+  - Auth
 consumes:
   - application/x-www-form-urlencoded
 produces:

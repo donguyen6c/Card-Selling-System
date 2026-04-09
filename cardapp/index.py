@@ -41,6 +41,10 @@ app.register_blueprint(auth_bp)
 
 swagger = Swagger(app, config=swagger_config, template=template)
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 @login.user_loader
 def load_user(id):
     return dao.get_user_by_id(id)
