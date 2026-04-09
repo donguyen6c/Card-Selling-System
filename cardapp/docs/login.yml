@@ -1,0 +1,20 @@
+tags:
+  - Auth
+consumes:
+  - application/x-www-form-urlencoded
+produces:
+  - application/json
+parameters:
+  - name: username
+    in: formData
+    type: string
+    required: true
+  - name: password
+    in: formData
+    type: string
+    required: true
+responses:
+  200:
+    description: Đăng nhập thành công
+  401:
+    description: Sai tên đăng nhập hoặc mật khẩu

@@ -1,0 +1,38 @@
+tags:
+  - User
+consumes:
+  - multipart/form-data
+produces:
+  - application/json
+parameters:
+  - name: name
+    in: formData
+    type: string
+    required: true
+  - name: username
+    in: formData
+    type: string
+    required: true
+  - name: password
+    in: formData
+    type: string
+    required: true
+  - name: confirm
+    in: formData
+    type: string
+    required: true
+  - name: email
+    in: formData
+    type: string
+    required: true
+  - name: avatar
+    in: formData
+    type: file
+    required: false
+responses:
+  200:
+    description: Đăng ký thành công (Not 201)
+  400:
+    description: Dữ liệu đầu vào không hợp lệ
+  500:
+    description: Lỗi hệ thống khi lưu vào cơ sở dữ liệu
