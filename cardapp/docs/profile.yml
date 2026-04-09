@@ -1,0 +1,18 @@
+tags:
+  - User
+parameters:
+  - name: name
+    in: formData
+    type: string
+    required: true
+  - name: email
+    in: formData
+    type: string
+    required: true
+  - name: avatar
+    in: formData
+    type: file
+    required: false
+responses:
+  200:
+    description: OK
