@@ -9,7 +9,7 @@
 <div class="alert alert-danger">{{err_msg}}</div>
 {% endif %}
 
-<form method="post" action="/register" enctype="multipart/form-data">
+<form method="post" action="/users" enctype="multipart/form-data">
     <div class="form-floating mb-3 mt-3">
         <input type="text" class="form-control" id="name" placeholder="Họ tên" name="name" required value="{{ data.get('name', '') if data else '' }}"/>
         <label for="name">Họ tên</label>

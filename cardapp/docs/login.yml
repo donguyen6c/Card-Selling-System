@@ -1,5 +1,5 @@
 tags:
-  - Login
+  - Auth
 consumes:
   - application/x-www-form-urlencoded
 produces:

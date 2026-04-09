@@ -1,5 +1,5 @@
 tags:
-  - User Profile
+  - User
 parameters:
   - name: name
     in: formData

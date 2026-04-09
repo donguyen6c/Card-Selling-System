@@ -34,7 +34,7 @@ def login_process():
 def register_view():
     return render_template('register.html')
 
-@auth_bp.route('/register', methods=['POST'])
+@auth_bp.route('/users', methods=['POST'])
 @swag_from('../docs/register.yml')
 def register_process():
     data = request.form
@@ -65,21 +65,21 @@ def logout_process():
         return redirect('/login')
     abort(401)
 
-@auth_bp.route('/profile', methods=['GET'])
+@auth_bp.route('/users/current-user', methods=['GET'])
 @login_required
 def profile_get():
     """
     Hiển thị trang thông tin cá nhân
     ---
     tags:
-        - "User Profile"
+        - User
     responses:
       200:
         description: Trả về HTML trang profile
     """
     return render_template('profile.html')
 
-@auth_bp.route('/profile', methods=['PUT'])
+@auth_bp.route('/users/current-user', methods=['PUT'])
 @login_required
 @swag_from('../docs/profile.yml')
 def profile_view():

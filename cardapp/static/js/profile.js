@@ -1,7 +1,7 @@
 function updateProfile(form) {
     const formData = new FormData(form);
 
-    fetch("/profile", {
+    fetch("/users/current-user", {
         method: "put",
         body: formData
     })
@@ -16,8 +16,10 @@ function updateProfile(form) {
             </div>
         `);
 
-        if (data.status === 'success' && data.avatar_url) {
-            document.querySelector('.rounded-circle').src = data.avatar_url;
+        if (data.status === 'success') {
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         }
     })
     .catch(err => alert("Lỗi hệ thống: " + err));

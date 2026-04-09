@@ -1,7 +1,7 @@
 tags:
-  - Login
+  - Auth
 description:
-  Yêu cầu: Phải đang ở trạng thái đăng nhập (có Session/Cookie).
+  Yêu cầu: Phải đang ở trạng thái đăng nhập.
 responses:
   302:
     description: Đăng xuất thành công và chuyển hướng (Redirect) về trang /login.
