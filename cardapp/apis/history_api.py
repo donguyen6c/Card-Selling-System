@@ -19,3 +19,8 @@ def history_view():
     receipts = dao.get_receipts_by_user(current_user.id)
 
     return render_template('history.html', receipts=receipts)
+
+@history_bp.route('/users/current-user/transactions')
+@login_required
+def register_view():
+    return render_template('history.html')

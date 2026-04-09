@@ -1,0 +1,19 @@
+tags:
+  - User
+produces:
+  - text/html
+responses:
+  200:
+    description: Truy cập thành công. Trả về giao diện HTML chứa danh sách giao dịch.
+    content:
+      text/html:
+        schema:
+          type: string
+          example: "<!DOCTYPE html><html>...Danh sách hóa đơn...</html>"
+  302:
+    description: Người dùng chưa đăng nhập hoặc phiên đăng nhập đã hết hạn.
+    headers:
+      Location:
+        type: string
+        description: Đường dẫn chuyển hướng.
+        example: "/login?next=/history"
