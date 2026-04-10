@@ -134,7 +134,7 @@ if (btnPlus && btnMinus) {
 }
 
 function addToCart(id, name, price, cardType, quantity = 1) {
-    fetch("/api/carts", {
+    fetch("/carts/items", {
         method: "post",
         body: JSON.stringify({
             "id": id,

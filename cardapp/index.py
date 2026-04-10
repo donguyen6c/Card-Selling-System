@@ -1,7 +1,7 @@
 import re
 from flask import Flask, jsonify, request, redirect, render_template
 from flasgger import Swagger, swag_from
-from cardapp.apis.auth_api import auth_bp
+from cardapp.apis import carts_api, auth_api
 from cardapp import dao, login, app
 from cardapp.models import CardType
 
@@ -17,7 +17,7 @@ swagger_config = {
     ],
     "static_url_path": "/flasgger_static",
     "swagger_ui": True,
-    "specs_route": "/docs"
+    "specs_route": "/docs",
 }
 
 template = {
@@ -38,7 +38,9 @@ template = {
 # ==========================================
 # CÁC ROUTE TRONG INDEX.PY
 # ==========================================
-app.register_blueprint(auth_bp)
+app.register_blueprint(auth_api.auth_bp)
+
+app.register_blueprint(carts_api.carts_api)
 
 swagger = Swagger(app, config=swagger_config, template=template)
 
