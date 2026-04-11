@@ -58,9 +58,20 @@ def add_user(name, username, password, avatar, email):
         db.session.rollback()
         raise
 
-def update_profile(user_id, name, email, avatar_file=None):
+
+def update_profile(user_id, name, password, email, avatar_file=None):
     if not name:
         raise ValueError("Tên không được để trống!")
+
+    if len(password) < 8:
+        raise ValueError("Mật khẩu phải có ít nhất 8 kí tự")
+
+    if not re.search(r'[0-9]', password):
+        raise ValueError("Mật khẩu phải chứa ít nhất một chữ số")
+    if not re.search(r'[a-z]', password):
+        raise ValueError("Mật khẩu phải chứa ít nhất một chữ thường")
+    if not re.search(r'[A-Z]', password):
+        raise ValueError("Mật khẩu phải chứa ít nhất một chữ hoa")
 
     email = validate_email_domain(email)
 
@@ -74,6 +85,7 @@ def update_profile(user_id, name, email, avatar_file=None):
 
     user.name = name
     user.email = email
+    user.password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
 
     if avatar_file:
         try:
@@ -84,8 +96,8 @@ def update_profile(user_id, name, email, avatar_file=None):
 
     try:
         db.session.commit()
-    except IntegrityError as e:
+    except IntegrityError:
         db.session.rollback()
-        raise e
+        raise
 
     return True
