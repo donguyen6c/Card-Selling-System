@@ -203,9 +203,8 @@ function addToCart(id, name, price, cardType, quantity = 1) {
             for (let e of elems) {
                 e.innerText = data.total_quantity;
             }
-        }
 
-        const statsContainer = document.getElementById('tier-stats-container');
+            const statsContainer = document.getElementById('tier-stats-container');
             if (statsContainer) {
                 if (price <= 30000) {
                     let current = parseInt(statsContainer.getAttribute('data-cart-t10')) || 0;
@@ -221,6 +220,7 @@ function addToCart(id, name, price, cardType, quantity = 1) {
 
             resetPaymentInfo();
             document.querySelectorAll('.product-btn').forEach(b => b.classList.remove('active'));
+        }
     })
     .catch(err => {
         console.error("Lỗi:", err);
