@@ -4,6 +4,31 @@ function getTierLimit(price) {
     return 3;
 }
 
+function updateTierStats() {
+    let t10 = 0, t5 = 0, t3 = 0;
+
+    document.querySelectorAll('.qty-input').forEach(input => {
+        let q = parseInt(input.value);
+        let p = parseFloat(input.getAttribute('data-price'));
+
+        if (p <= 30000) t10 += q;
+        else if (p <= 300000) t5 += q;
+        else t3 += q;
+    });
+
+    updateElement('tier-10-val', t10, 10);
+    updateElement('tier-5-val', t5, 5);
+    updateElement('tier-3-val', t3, 3);
+}
+
+function updateElement(id, current, max) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = `${current}/${max}`;
+        el.className = current >= max ? "text-danger fw-bold" : "text-dark fw-bold"
+    }
+}
+
 function changeQuantity(id, step, price) {
     let inputObj = document.getElementById(`qty-${id}`);
     let currentQty = parseInt(inputObj.value);
@@ -55,6 +80,7 @@ function updateCart(id, obj, price) {
                     btnPlus.disabled = false;
                 }
             }
+            updateTierStats();
         }
     }).catch(err => {
         console.error(err);
@@ -71,14 +97,19 @@ function deleteCart(product_id) {
             return res.json();
         })
         .then(data => {
-            document.getElementById(`cart${product_id}`).style.display = "none";
+            document.getElementById(`cart${product_id}`).remove();
+
             let counters = document.getElementsByClassName("cart-counter");
             for (let c of counters) c.innerText = data.total_quantity;
 
             let amounts = document.getElementsByClassName("cart-amount");
             for (let a of amounts) a.innerText = data.total_amount.toLocaleString("vi-VN");
 
-            if (data.total_quantity === 0) location.reload();
+            if (data.total_quantity === 0) {
+                location.reload();
+            } else {
+                updateTierStats();
+            }
         })
         .catch(err => {
             console.error(err);

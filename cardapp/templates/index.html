@@ -188,7 +188,32 @@
             </div>
         </div>
 
-        <div class="col-lg-4">
+        <div id="tier-stats-container"
+     data-cart-t10="{{ cart_tier_stats.t10 }}"
+     data-cart-t5="{{ cart_tier_stats.t5 }}"
+     data-cart-t3="{{ cart_tier_stats.t3 }}"
+     class="card shadow-sm border-0 mb-3 bg-light">
+    <div class="card-body p-2 px-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="small fw-bold text-primary text-uppercase" style="font-size: 0.7rem;">Hạn mức đơn hàng hiện tại</span>
+        </div>
+        <div class="d-flex justify-content-between text-center" style="font-size: 0.8rem;">
+            <div class="flex-fill border-end">
+                <div class="text-muted" style="font-size: 0.65rem;">&le; 30K</div>
+                <strong id="idx-tier-10" class="text-dark">0/10</strong>
+            </div>
+            <div class="col-4 border-end">
+                <div class="text-muted" style="font-size: 0.65rem;">50-300K</div>
+                <strong id="idx-tier-5" class="text-dark">0/5</strong>
+            </div>
+            <div class="col-4">
+                <div class="text-muted" style="font-size: 0.65rem;">&gt; 300K</div>
+                <strong id="idx-tier-3" class="text-dark">0/3</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
             <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
                 <div class="card-header bg-white border-bottom p-3">
                     <h5 class="mb-0 fw-bold text-center">THÔNG TIN SẢN PHẨM</h5>
@@ -210,21 +235,24 @@
                         </div>
 
                         <div class="d-flex justify-content-between mb-3 border-bottom pb-3 align-items-center">
-    <span class="text-secondary">Số lượng:</span>
-    <div class="text-end">
-        <div class="input-group" style="width: 120px;">
-            <button class="btn btn-outline-secondary btn-sm" type="button" id="btn-minus">-</button>
-            <input type="number" class="form-control form-control-sm text-center fw-bold"
-                   id="bill-quantity" name="quantity" value="1" min="1" readonly>
-            <button class="btn btn-outline-secondary btn-sm" type="button" id="btn-plus">+</button>
-        </div>
+                            <span class="text-secondary">Số lượng:</span>
+                            <div class="text-end">
+                                <div class="input-group" style="width: 120px;">
+                                    <button class="btn btn-outline-secondary btn-sm" type="button" id="btn-minus">-
+                                    </button>
+                                    <input type="number" class="form-control form-control-sm text-center fw-bold"
+                                           id="bill-quantity" name="quantity" value="1" min="1" readonly>
+                                    <button class="btn btn-outline-secondary btn-sm" type="button" id="btn-plus">+
+                                    </button>
+                                </div>
 
-        <div id="limit-hint" class="text-danger mt-1" style="font-size: 12px; font-style: italic;">
-            * Chọn mệnh giá để xem hạn mức
-        </div>
+                                <div id="limit-hint" class="text-danger mt-1"
+                                     style="font-size: 12px; font-style: italic;">
+                                    * Chọn mệnh giá để xem hạn mức
+                                </div>
 
-    </div>
-</div>
+                            </div>
+                        </div>
 
                         <div class="d-flex justify-content-between mb-4 mt-4">
                             <span class="fw-bold fs-5">Tạm tính:</span>

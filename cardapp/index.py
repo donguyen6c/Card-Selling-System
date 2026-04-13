@@ -53,8 +53,13 @@ def index():
     phone_categories = [p for p in categories if p.card_type == CardType.PHONE]
     game_categories = [g for g in categories if g.card_type == CardType.GAME]
 
+    cart = session.get('cart', {})
+    t10_count = sum(c['quantity'] for c in cart.values() if c['price'] <= 30000)
+    t5_count = sum(c['quantity'] for c in cart.values() if 30000 < c['price'] <= 300000)
+    t3_count = sum(c['quantity'] for c in cart.values() if c['price'] > 300000)
+
     return render_template('index.html', categories=categories, products=products, banners=banners,
-                           phone_categories=phone_categories, game_categories=game_categories)
+                           phone_categories=phone_categories, game_categories=game_categories, cart_tier_stats={'t10': t10_count, 't5': t5_count, 't3': t3_count})
 
 @app.context_processor
 def common_response():

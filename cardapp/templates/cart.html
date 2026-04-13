@@ -5,6 +5,26 @@
 {% block content %}
 
 <h1 class="text-success text-center mt-2">GIỎ HÀNG</h1>
+<div class="d-flex justify-content-end mb-2">
+    <div class="bg-light border rounded shadow-sm px-3 py-2 d-inline-flex align-items-center" style="font-size: 0.85rem;">
+        <span class="fw-bold text-secondary me-3"><i class="fas fa-info-circle text-primary me-1"></i> Hạn mức đã chọn:</span>
+
+        {# Logic đếm Jinja2 (vẫn giữ nguyên) #}
+        {% set t10, t5, t3 = [0], [0], [0] %}
+        {% for c in session['cart'].values() %}
+            {% if c.price <= 30000 %}{% set _ = t10.append(t10.pop() + c.quantity) %}
+            {% elif c.price <= 300000 %}{% set _ = t5.append(t5.pop() + c.quantity) %}
+            {% else %}{% set _ = t3.append(t3.pop() + c.quantity) %}
+            {% endif %}
+        {% endfor %}
+
+        <div class="d-flex gap-3">
+            <span>&le;30K: <strong id="tier-10-val" class="{{ 'text-danger' if t10[0] >= 10 else 'text-dark' }}">{{ t10[0] }}/10</strong></span>
+            <span>50-300K: <strong id="tier-5-val" class="{{ 'text-danger' if t5[0] >= 5 else 'text-dark' }}">{{ t5[0] }}/5</strong></span>
+            <span>&gt;300K: <strong id="tier-3-val" class="{{ 'text-danger' if t3[0] >= 3 else 'text-dark' }}">{{ t3[0] }}/3</strong></span>
+        </div>
+    </div>
+</div>
 
 {% if 'cart' in session and session['cart'] %}
 <table class="table">
@@ -30,28 +50,19 @@
                 </button>
 
                 <input type="number" id="qty-{{ c.id }}" value="{{ c.quantity }}"
-                       class="form-control text-center fw-bold" readonly/>
+                       data-price="{{ c.price }}"
+                       class="form-control text-center fw-bold qty-input" readonly/>
 
                 <button class="btn btn-outline-secondary fw-bold" type="button"
                         id="btn-plus-{{ c.id }}"
                         onclick="changeQuantity('{{ c.id }}', 1, {{ c.price }})"
-                        {% if (c.price
-                <= 30000 and c.quantity >= 10) or
-                (c.price > 30000 and c.price <= 300000 and c.quantity >= 5) or
-                (c.price > 300000 and c.quantity >= 3) %}
-                disabled
-                {% endif %}
+                        title="Giới hạn tối đa: {% if c.price <= 30000 %}10{% elif c.price <= 300000 %}5{% else %}3{% endif %} thẻ"
+                        {% if (c.price <= 30000 and c.quantity >= 10) or
+                              (c.price > 30000 and c.price <= 300000 and c.quantity >= 5) or
+                              (c.price > 300000 and c.quantity >= 3) %}
+                        disabled
+                        {% endif %}
                 >+</button>
-            </div>
-
-            <div class="text-muted mt-1" style="font-size: 0.75rem; font-style: italic;">
-                Hạn mức tối đa:
-                <span class="fw-bold">
-            {% if c.price <= 30000 %} 10 thẻ
-            {% elif c.price <= 300000 %} 5 thẻ
-            {% else %} 3 thẻ
-            {% endif %}
-        </span>
             </div>
         </td>
         <td>
@@ -59,6 +70,7 @@
         </td>
     </tr>
     {% endfor %}
+
     </tbody>
 </table>
 

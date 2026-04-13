@@ -9,7 +9,6 @@ function resetPaymentInfo() {
     document.getElementById('bill-price').innerText = "0 đ";
     document.getElementById('bill-total').innerText = "0 đ";
 
-    // Reset dòng chữ hạn mức về mặc định
     const limitHint = document.getElementById('limit-hint');
     if (limitHint) limitHint.innerText = "* Chọn mệnh giá để xem hạn mức";
 
@@ -25,6 +24,8 @@ function resetPaymentInfo() {
 
     const btnBuy = document.getElementById('btn-buy');
     if (btnBuy) btnBuy.disabled = true;
+
+    updateIndexTierStats();
 }
 
 const btnBuy = document.getElementById('btn-buy');
@@ -57,9 +58,45 @@ function updateTotal() {
     const qty = parseInt(qtyInput.value);
     const total = currentPrice * qty;
     document.getElementById('bill-total').innerText = formatCurrency(total);
+
+    updateIndexTierStats();
 }
 
-// XỬ LÝ KHI BẤM CHỌN MỆNH GIÁ THẺ
+function updateIndexTierStats() {
+    const statsContainer = document.getElementById('tier-stats-container');
+    if (!statsContainer) return;
+
+    let cartT10 = parseInt(statsContainer.getAttribute('data-cart-t10')) || 0;
+    let cartT5 = parseInt(statsContainer.getAttribute('data-cart-t5')) || 0;
+    let cartT3 = parseInt(statsContainer.getAttribute('data-cart-t3')) || 0;
+
+    let formQty = parseInt(document.getElementById('bill-quantity').value) || 0;
+    let formPrice = currentPrice || 0;
+
+    let displayT10 = cartT10;
+    let displayT5 = cartT5;
+    let displayT3 = cartT3;
+
+    if (formPrice > 0) {
+        if (formPrice <= 30000) displayT10 += formQty;
+        else if (formPrice <= 300000) displayT5 += formQty;
+        else displayT3 += formQty;
+    }
+
+    // 4. Hiển thị lên màn hình
+    updateIdxDisplay('idx-tier-10', displayT10, 10);
+    updateIdxDisplay('idx-tier-5', displayT5, 5);
+    updateIdxDisplay('idx-tier-3', displayT3, 3);
+}
+
+function updateIdxDisplay(id, val, max) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = `${val}/${max}`;
+        el.className = val >= max ? "text-danger fw-bold" : "text-dark fw-bold";
+    }
+}
+
 const productBtns = document.querySelectorAll('.product-btn');
 productBtns.forEach(btn => {
     btn.addEventListener('click', function() {
@@ -86,15 +123,12 @@ productBtns.forEach(btn => {
         const qtyInput = document.getElementById('bill-quantity');
         qtyInput.value = 1;
 
-        // Tính toán hạn mức dựa trên mệnh giá
         let systemLimit = 3;
         if (currentPrice <= 30000) systemLimit = 10;
         else if (currentPrice <= 300000) systemLimit = 5;
 
-        // Cập nhật dòng chữ cảnh báo cho người dùng thấy
         document.getElementById('limit-hint').innerText = "* Tối đa " + systemLimit + " thẻ cho mệnh giá này";
 
-        // Gán max cho ô input (số nhỏ hơn giữa tồn kho và hạn mức)
         let actualMaxLimit = Math.min(systemLimit, currentInventory);
         qtyInput.setAttribute('data-max', actualMaxLimit);
         qtyInput.setAttribute('data-inventory', currentInventory);
@@ -170,6 +204,23 @@ function addToCart(id, name, price, cardType, quantity = 1) {
                 e.innerText = data.total_quantity;
             }
         }
+
+        const statsContainer = document.getElementById('tier-stats-container');
+            if (statsContainer) {
+                if (price <= 30000) {
+                    let current = parseInt(statsContainer.getAttribute('data-cart-t10')) || 0;
+                    statsContainer.setAttribute('data-cart-t10', current + quantity);
+                } else if (price <= 300000) {
+                    let current = parseInt(statsContainer.getAttribute('data-cart-t5')) || 0;
+                    statsContainer.setAttribute('data-cart-t5', current + quantity);
+                } else {
+                    let current = parseInt(statsContainer.getAttribute('data-cart-t3')) || 0;
+                    statsContainer.setAttribute('data-cart-t3', current + quantity);
+                }
+            }
+
+            resetPaymentInfo();
+            document.querySelectorAll('.product-btn').forEach(b => b.classList.remove('active'));
     })
     .catch(err => {
         console.error("Lỗi:", err);
