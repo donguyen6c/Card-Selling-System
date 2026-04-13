@@ -9,6 +9,10 @@ function resetPaymentInfo() {
     document.getElementById('bill-price').innerText = "0 đ";
     document.getElementById('bill-total').innerText = "0 đ";
 
+    // Reset dòng chữ hạn mức về mặc định
+    const limitHint = document.getElementById('limit-hint');
+    if (limitHint) limitHint.innerText = "* Chọn mệnh giá để xem hạn mức";
+
     const qtyInput = document.getElementById('bill-quantity');
     if (qtyInput) {
         qtyInput.value = 1;
@@ -19,6 +23,8 @@ function resetPaymentInfo() {
     const formProductId = document.getElementById('form-product-id');
     if (formProductId) formProductId.value = "";
 
+    const btnBuy = document.getElementById('btn-buy');
+    if (btnBuy) btnBuy.disabled = true;
 }
 
 const btnBuy = document.getElementById('btn-buy');
@@ -53,6 +59,7 @@ function updateTotal() {
     document.getElementById('bill-total').innerText = formatCurrency(total);
 }
 
+// XỬ LÝ KHI BẤM CHỌN MỆNH GIÁ THẺ
 const productBtns = document.querySelectorAll('.product-btn');
 productBtns.forEach(btn => {
     btn.addEventListener('click', function() {
@@ -79,13 +86,16 @@ productBtns.forEach(btn => {
         const qtyInput = document.getElementById('bill-quantity');
         qtyInput.value = 1;
 
-        let systemLimit = 1;
+        // Tính toán hạn mức dựa trên mệnh giá
+        let systemLimit = 3;
         if (currentPrice <= 30000) systemLimit = 10;
         else if (currentPrice <= 300000) systemLimit = 5;
-        else systemLimit = 3;
 
+        // Cập nhật dòng chữ cảnh báo cho người dùng thấy
+        document.getElementById('limit-hint').innerText = "* Tối đa " + systemLimit + " thẻ cho mệnh giá này";
+
+        // Gán max cho ô input (số nhỏ hơn giữa tồn kho và hạn mức)
         let actualMaxLimit = Math.min(systemLimit, currentInventory);
-
         qtyInput.setAttribute('data-max', actualMaxLimit);
         qtyInput.setAttribute('data-inventory', currentInventory);
 
@@ -94,6 +104,7 @@ productBtns.forEach(btn => {
     });
 });
 
+// XỬ LÝ NÚT CỘNG TRỪ SỐ LƯỢNG
 const btnPlus = document.getElementById('btn-plus');
 const btnMinus = document.getElementById('btn-minus');
 
@@ -113,7 +124,7 @@ if (btnPlus && btnMinus) {
                 if (currentQty >= inventory) {
                     alert(`Rất tiếc, kho chỉ còn ${inventory} thẻ mệnh giá này!`);
                 } else {
-                    alert(`Theo quy định, mệnh giá ${formatCurrency(currentPrice)} chỉ được mua tối đa ${maxLimit} thẻ/đơn.`);
+                    alert(`Theo quy định, mệnh giá này chỉ được mua tối đa ${maxLimit} thẻ/đơn.`);
                 }
             }
         } else {

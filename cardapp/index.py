@@ -1,8 +1,8 @@
 import re
-from flask import Flask, jsonify, request, redirect, render_template
+from flask import Flask, jsonify, request, redirect, render_template, session
 from flasgger import Swagger, swag_from
 from cardapp.apis import carts_api, auth_api
-from cardapp import dao, login, app
+from cardapp import dao, login, app, utils
 from cardapp.models import CardType
 
 swagger_config = {
@@ -55,6 +55,14 @@ def index():
 
     return render_template('index.html', categories=categories, products=products, banners=banners,
                            phone_categories=phone_categories, game_categories=game_categories)
+
+@app.context_processor
+def common_response():
+    cart = session.get('cart', {})
+    cart_stats = utils.stats_cart(cart)
+    return {
+        'cart_stats': cart_stats
+    }
 
 @login.user_loader
 def load_user(id):

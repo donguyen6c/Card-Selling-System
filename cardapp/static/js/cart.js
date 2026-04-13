@@ -1,14 +1,31 @@
+function getTierLimit(price) {
+    if (price <= 30000) return 10;
+    if (price <= 300000) return 5;
+    return 3;
+}
+
 function changeQuantity(id, step, price) {
     let inputObj = document.getElementById(`qty-${id}`);
     let currentQty = parseInt(inputObj.value);
     let newQty = currentQty + step;
+
+    let limit = getTierLimit(price);
+
     if (newQty < 1) return;
+
+    if (newQty > limit) {
+        alert(`Mệnh giá này chỉ được mua tối đa ${limit} thẻ mỗi đơn!`);
+        return;
+    }
+
     inputObj.value = newQty;
     updateCart(id, inputObj, price);
 }
 
 function updateCart(id, obj, price) {
     let newQty = parseInt(obj.value);
+    let limit = getTierLimit(price);
+
     if (isNaN(newQty) || newQty < 1) {
         alert("Số lượng không hợp lệ!");
         location.reload();
@@ -29,8 +46,18 @@ function updateCart(id, obj, price) {
 
             let amounts = document.getElementsByClassName("cart-amount");
             for (let a of amounts) a.innerText = data.total_amount.toLocaleString("vi-VN");
+
+            let btnPlus = document.getElementById(`btn-plus-${id}`);
+            if (btnPlus) {
+                if (newQty >= limit) {
+                    btnPlus.disabled = true;
+                } else {
+                    btnPlus.disabled = false;
+                }
+            }
         }
     }).catch(err => {
+        console.error(err);
         alert("Có lỗi xảy ra, vui lòng thử lại!");
         location.reload();
     });
