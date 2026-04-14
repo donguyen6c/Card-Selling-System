@@ -1,4 +1,5 @@
-from cardapp.models import Receipt, ReceiptDetails, Discount, Card, DiscountType
+from cardapp.dao.discount_dao import check_discount
+from cardapp.models import Receipt, ReceiptDetails, Discount, Card, DiscountType, Product
 from cardapp import db, utils
 from datetime import datetime
 from cardapp.utils import stats_cart
@@ -78,5 +79,3 @@ def add_receipt(user_id, cart, discount_code=None):
         db.session.rollback()
         print(f"Lỗi thanh toán: {str(e)}")
         raise Exception("Có lỗi xảy ra trong quá trình ghi nhận đơn hàng!")
-def check_discount(code, cart):
-    pass

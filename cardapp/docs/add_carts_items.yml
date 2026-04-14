@@ -23,13 +23,11 @@ parameters:
           example: 1
         name:
           type: string
-          example: "Thẻ Garena 50k"
         price:
           type: number
           example: 50000
         card_type:
           type: string
-          example: "Garena"
         quantity:
           type: integer
           example: 1

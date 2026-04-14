@@ -1,0 +1,5 @@
+
+flask-mail
+flasgger
+flask-login
+flask

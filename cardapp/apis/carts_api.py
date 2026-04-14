@@ -3,8 +3,6 @@ import re
 from flask import Blueprint, request, render_template, redirect, abort, jsonify, session
 from flask_login import login_user, logout_user, current_user, login_required
 from flasgger import swag_from
-from sqlalchemy.exc import IntegrityError
-from werkzeug.exceptions import Conflict
 
 from cardapp import dao, utils
 from cardapp.models import Product
@@ -13,7 +11,6 @@ carts_api = Blueprint('carts', __name__)
 
 @carts_api.route('/carts', methods=['GET'])
 @login_required
-@swag_from('../docs/get_cart.yml')
 def cart_view():
     cart = session.get('cart', {})
 
@@ -134,7 +131,6 @@ def update_to_cart(id):
 
     product = Product.query.get(id)
 
-    # ✅ tách rõ tránh lỗi ngầm
     if not product:
         return jsonify({
             "status": "error",
