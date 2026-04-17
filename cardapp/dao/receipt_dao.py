@@ -1,5 +1,5 @@
 from cardapp.dao.discount_dao import check_discount
-from cardapp.models import Receipt, ReceiptDetails, Discount, Card, DiscountType, Product
+from cardapp.models import Receipt, ReceiptDetails, Discount, Card, DiscountType, Product, ReceiptStatus
 from cardapp import db, utils
 from datetime import datetime
 from cardapp.utils import stats_cart
@@ -31,7 +31,8 @@ def add_receipt(user_id, cart, discount_code=None):
         user_id=user_id,
         total_amount=total_amount,
         final_amount=final_amount,
-        discount_id=discount_id
+        discount_id=discount_id,
+        status=ReceiptStatus.PENDING
     )
     db.session.add(r)
 
@@ -54,7 +55,8 @@ def add_receipt(user_id, cart, discount_code=None):
 
         available_cards = Card.query.filter(
             Card.product_id == product_id,
-            Card.is_sold == False
+            Card.is_sold == False,
+            Card.receipt_id.is_(None)
         ).limit(buy_qty).all()
 
         if len(available_cards) < buy_qty:
@@ -74,8 +76,39 @@ def add_receipt(user_id, cart, discount_code=None):
 
     try:
         db.session.commit()
-        return True
+        return r.id
     except Exception as e:
         db.session.rollback()
         print(f"Lỗi thanh toán: {str(e)}")
         raise Exception("Có lỗi xảy ra trong quá trình ghi nhận đơn hàng!")
+
+
+def cancel_expired_receipt(receipt_id):
+    r = Receipt.query.get(receipt_id)
+
+    if r and r.status == ReceiptStatus.PENDING:
+        r.status = ReceiptStatus.CANCELLED
+
+        for card in r.cards_sold:
+            card.is_sold = False
+            card.receipt_id = None
+
+        for detail in r.details:
+            product = Product.query.get(detail.product_id)
+            if product:
+                product.inventory += detail.quantity
+
+        if r.discount_id:
+            discount = Discount.query.get(r.discount_id)
+            if discount and discount.used_count > 0:
+                discount.used_count -= 1
+
+        try:
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Lỗi khi hủy đơn: {str(e)}")
+            return False
+
+    return False

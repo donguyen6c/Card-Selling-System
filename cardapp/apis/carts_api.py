@@ -10,18 +10,19 @@ from cardapp.models import Product
 carts_api = Blueprint('carts', __name__)
 
 @carts_api.route('/carts', methods=['GET'])
-@login_required
 def cart_view():
+    if not current_user.is_authenticated:
+        return redirect('/login?next=/checkout')
     cart = session.get('cart', {})
-
     cart_stats = utils.stats_cart(cart)
-
     return render_template('cart.html', cart_stats=cart_stats)
 
 @carts_api.route('/carts/items', methods=['POST'])
-@login_required
 @swag_from('../docs/add_carts_items.yml')
 def add_to_cart():
+    if not current_user.is_authenticated:
+        return redirect('/login?next=/')
+
     cart = session.get('cart')
     if not cart:
         cart = {}
