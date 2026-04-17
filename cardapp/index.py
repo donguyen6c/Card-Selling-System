@@ -1,8 +1,9 @@
 import re
-from flask import Flask, jsonify, request, redirect, render_template
 from flasgger import Swagger, swag_from
-from cardapp.apis.auth_api import auth_bp
+from flask import Flask, jsonify, request, redirect, render_template
+
 from cardapp import dao, login, app
+from cardapp.apis.auth_api import auth_bp
 
 swagger_config = {
     "headers": [],
