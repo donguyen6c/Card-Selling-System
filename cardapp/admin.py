@@ -9,7 +9,6 @@ from cardapp import app, db
 import cardapp.dao as dao
 import cloudinary.uploader
 
-
 class AdminModelView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRole.ADMIN
@@ -174,6 +173,49 @@ class LogoutView(BaseView):
         return current_user.is_authenticated
 
 
+class UserView(AdminModelView):
+    column_labels = {
+        'name': 'Họ tên',
+        'avatar': 'Ảnh đại diện',
+        'username': 'Tên đăng nhập',
+        'email': 'Email',
+        'password': 'Mật khẩu',
+        'user_role': 'Vai trò (Quyền)'
+    }
+
+    column_list = ['id', 'name', 'username', 'email', 'user_role']
+    column_searchable_list = ['name', 'username', 'email']
+    column_filters = ['user_role']
+
+    form_excluded_columns = ['receipts']
+
+    def on_model_delete(self, model):
+        if model.receipts and len(model.receipts) > 0:
+            raise ValueError(
+                f"TỪ CHỐI XÓA: Tài khoản '{model.username}' đã có {len(model.receipts)} hóa đơn. Hãy vô hiệu hóa thay vì xóa!")
+
+
+class ReceiptView(AdminModelView):
+    column_labels = {
+        'id': 'Mã hóa đơn',
+        'user': 'Khách hàng',
+        'created_date': 'Ngày thanh toán',
+        'total_amount': 'Tổng tiền gốc',
+        'final_amount': 'Số tiền thực thu',
+        'discount_applied': 'Mã giảm giá'
+    }
+
+    column_list = ['id', 'user', 'total_amount', 'final_amount', 'created_date']
+
+    can_create = False
+    can_edit = False
+    can_delete = False
+
+    column_filters = ['created_date', 'user.username']
+    column_searchable_list = ['id']
+    column_default_sort = ('created_date', True)
+
+
 admin = Admin(app=app, name="Quản Trị Bán Thẻ", index_view=MyAdminIndexView())
 
 admin.add_view(AdminModelView(Category, db.session, name="Nhà mạng"))
@@ -181,7 +223,7 @@ admin.add_view(AdminModelView(Product, db.session, name="Mệnh giá thẻ"))
 admin.add_view(CardView(Card, db.session, name="Kho thẻ"))
 admin.add_view(DiscountView(Discount, db.session, name="Khuyến mãi"))
 admin.add_view(BannerView(Banner, db.session, name="Banner"))
-admin.add_view(AdminModelView(Receipt, db.session, name="Lịch sử Hóa đơn"))
-admin.add_view(AdminModelView(User, db.session, name="Tài khoản"))
+admin.add_view(ReceiptView(Receipt, db.session, name="Lịch sử Hóa đơn"))
+admin.add_view(UserView(User, db.session, name="Tài khoản người dùng"))
 admin.add_view(StatsView(name='Thống kê & Báo cáo'))
 admin.add_view(LogoutView(name='Đăng xuất'))
