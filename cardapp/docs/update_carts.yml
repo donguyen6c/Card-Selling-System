@@ -1,0 +1,32 @@
+tags:
+  - Cart
+description: Nhận ID sản phẩm từ URL và số lượng mới từ Body. Tự động kiểm tra lại tồn kho và giới hạn nhóm giá.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: path
+    name: id
+    required: true
+    type: string
+    description: ID của sản phẩm trong giỏ hàng cần cập nhật
+  - in: body
+    name: body
+    required: true
+    description: Số lượng mới muốn thay đổi
+    schema:
+      type: object
+      required:
+        - quantity
+      properties:
+        quantity:
+          type: integer
+          example: 2
+responses:
+  200:
+    description: Cập nhật thành công, trả về thống kê giỏ hàng mới.
+  400:
+    description: Vượt quá số lượng cho phép hoặc kho không đủ hàng.
+  404:
+    description: Sản phẩm không tồn tại trong giỏ hàng hiện tại.
