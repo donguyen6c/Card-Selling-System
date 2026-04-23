@@ -1,0 +1,109 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <h2 class="text-center text-success fw-bold mb-4">THỐNG KÊ DOANH THU</h2>
+
+    <div class="row mb-5">
+        <div class="col-md-5">
+            <h5 class="text-info">Doanh thu theo mệnh giá thẻ</h5>
+            <table class="table table-bordered table-striped mt-3">
+                <thead class="thead-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Sản phẩm</th>
+                        <th>Tổng doanh thu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in revenue_products %}
+                    <tr>
+                        <td>{{ s[0] }}</td>
+                        <td class="font-weight-bold">{{ s[1] }}</td>
+                        <td class="text-success">{{ "{:,.0f}".format(s[2]) }} VNĐ</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-7">
+            <canvas id="myChart1"></canvas>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row mt-5">
+        <div class="col-md-5">
+            <h5 class="text-info">Doanh thu theo tháng</h5>
+            <table class="table table-bordered table-striped mt-3">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Tháng</th>
+                        <th>Tổng doanh thu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in revenue_times %}
+                    <tr>
+                        <td class="font-weight-bold">Tháng {{ s[0]|int }}</td>
+                        <td class="text-success">{{ "{:,.0f}".format(s[1]) }} VNĐ</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-7">
+            <canvas id="myChart2"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+window.onload = function() {
+    // Biểu đồ Cột - loại thẻ
+    let labels1 = [];
+    let data1 = [];
+    {% for s in revenue_products %}
+    labels1.push('{{ s[1] }}');
+    data1.push({{ s[2] }});
+    {% endfor %}
+
+    new Chart(document.getElementById('myChart1'), {
+        type: 'bar',
+        data: {
+          labels: labels1,
+          datasets: [{
+            label: 'Doanh thu (VNĐ)',
+            data: data1,
+            backgroundColor: '#3498db'
+          }]
+        }
+    });
+
+    // Biểu đồ Đường - theo tháng
+    let labels2 = [];
+    let data2 = [];
+    {% for s in revenue_times %}
+    labels2.push('Tháng ' + {{ s[0] }});
+    data2.push({{ s[1] }});
+    {% endfor %}
+
+    new Chart(document.getElementById('myChart2'), {
+        type: 'line',
+        data: {
+          labels: labels2,
+          datasets: [{
+            label: 'Doanh thu (VNĐ)',
+            data: data2,
+            borderColor: '#e74c3c',
+            backgroundColor: 'rgba(231, 76, 60, 0.2)',
+            fill: true,
+            tension: 0.3
+          }]
+        }
+    });
+}
+</script>
+{% endblock %}

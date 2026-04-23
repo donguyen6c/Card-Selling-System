@@ -71,9 +71,15 @@ def common_response():
         'cart_stats': cart_stats
     }
 
+@app.route('/promotion')
+def promotion_view():
+    discounts = dao.load_discounts()
+    return render_template('promotion.html', discounts=discounts)
+
 @login.user_loader
 def load_user(id):
     return dao.get_user_by_id(id)
 
 if __name__ == '__main__':
     app.run(debug=True)
+
