@@ -46,6 +46,11 @@ swagger = Swagger(app, config=swagger_config, template=template)
 def index():
     return render_template('index.html')
 
+@app.route('/promotion')
+def promotion_view():
+    discounts = dao.load_discounts()
+    return render_template('promotion.html', discounts=discounts)
+
 @login.user_loader
 def load_user(id):
     return dao.get_user_by_id(id)
