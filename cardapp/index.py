@@ -42,6 +42,8 @@ app.register_blueprint(auth_api.auth_bp)
 
 app.register_blueprint(carts_api.carts_api)
 
+app.register_blueprint(inven_bp)
+
 swagger = Swagger(app, config=swagger_config, template=template)
 
 @app.route('/')

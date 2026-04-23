@@ -17,3 +17,19 @@ def test_auth_success(test_app, test_session,existing_user):
 def test_auth_wrong_password(test_app, test_session,existing_user):
     user = auth_user("authtest123", "abc@1234")
     assert user is None
+
+def test_auth_empty_username(test_app, test_session, existing_user):
+    user = auth_user("", "Abc@1234")
+    assert user is None
+
+def test_auth_empty_password(test_app, test_session, existing_user):
+    user = auth_user("authtest123", "")
+    assert user is None
+
+def test_auth_empty_both(test_app, test_session, existing_user):
+    user = auth_user("", "")
+    assert user is None
+
+def test_not_existing_user(test_app, test_session):
+    user = auth_user("authtest123", "Abc@1234")
+    assert user is None
