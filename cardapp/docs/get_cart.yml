@@ -1,0 +1,9 @@
+tags:
+  - Cart
+summary: Hiển thị giao diện giỏ hàng (HTML)
+description: Lấy thông tin giỏ hàng hiện tại từ Session, tính toán tổng số lượng, tổng tiền và render ra giao diện HTML.
+produces:
+  - text/html
+responses:
+  200:
+    description: Truy cập thành công. Trả về mã nguồn trang HTML giỏ hàng.

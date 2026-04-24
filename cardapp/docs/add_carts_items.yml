@@ -1,0 +1,43 @@
+tags:
+  - Cart
+summary: Thêm sản phẩm mới vào giỏ hàng
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    required: true
+    description: Thông tin của thẻ cào cần thêm vào giỏ
+    schema:
+      type: object
+      required:
+        - id
+        - name
+        - price
+        - card_type
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Thẻ Garena 50k"
+        price:
+          type: number
+          example: 50000
+        card_type:
+          type: string
+          example: "Garena"
+        quantity:
+          type: integer
+          example: 1
+          default: 1
+responses:
+  200:
+    description: Thêm vào giỏ thành công.
+  400:
+    description: Vượt quá giới hạn số lượng thẻ cho phép trong cùng phân khúc giá, hoặc vượt quá tồn kho hiện tại.
+  404:
+    description: ID sản phẩm không tồn tại trong CSDL.

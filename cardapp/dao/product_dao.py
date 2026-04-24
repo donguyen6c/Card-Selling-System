@@ -20,4 +20,8 @@ def count_products():
     return Product.query.count()
 
 def count_product_by_cate():
-    pass
+    return (db.session.query(Category.id, Category.name, func.count(Card.id))
+            .join(Product, Product.category_id == Category.id)
+            .join(Card, Card.product_id == Product.id)
+            .filter(Card.is_sold == False)
+            .group_by(Category.id).all())
