@@ -39,7 +39,6 @@ class User(BaseModel, UserMixin):
 
     receipts = relationship('Receipt', backref='user', lazy=True)
 
-
 class Category(BaseModel):
     name = Column(String(50), unique=True, nullable=False)
     card_type = Column(Enum(CardType), default=CardType.PHONE, nullable=False)

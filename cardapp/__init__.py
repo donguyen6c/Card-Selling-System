@@ -25,3 +25,5 @@ login = LoginManager(app=app)
 cloudinary.config(cloud_name='dfgicbdji',
 api_key='124197697555968',
 api_secret='45n1Ut4C5xt4bdquewTAzc9dcB8')
+
+from cardapp import admin

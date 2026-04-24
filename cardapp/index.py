@@ -20,6 +20,7 @@ swagger_config = {
     "specs_route": "/docs",
 }
 
+
 template = {
     "swagger": "2.0",
     "info": {
@@ -43,6 +44,9 @@ app.register_blueprint(auth_api.auth_bp)
 app.register_blueprint(carts_api.carts_api)
 
 app.register_blueprint(pay_api.pay_api)
+app.register_blueprint(inven_bp)
+
+app.register_blueprint(history_bp)
 
 swagger = Swagger(app, config=swagger_config, template=template)
 
@@ -71,9 +75,15 @@ def common_response():
         'cart_stats': cart_stats
     }
 
+@app.route('/promotion')
+def promotion_view():
+    discounts = dao.load_discounts()
+    return render_template('promotion.html', discounts=discounts)
+
 @login.user_loader
 def load_user(id):
     return dao.get_user_by_id(id)
 
 if __name__ == '__main__':
     app.run(debug=True)
+

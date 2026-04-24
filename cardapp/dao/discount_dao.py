@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from cardapp import utils
-from cardapp.models import DiscountType, Discount
+from cardapp import utils, db
+from cardapp.models import Receipt, ReceiptDetails, Discount, Card, DiscountType
 
 def check_discount(code, cart):
     fail_res = {'success': False, 'discount_amount': 0, 'message': "", 'discount_id': None}
@@ -75,3 +75,7 @@ def check_discount(code, cart):
         'message': "Áp dụng mã giảm giá thành công!",
         'discount_id': discount.id
     }
+
+def load_discounts():
+    return Discount.query.filter(Discount.active == True).all()
+
