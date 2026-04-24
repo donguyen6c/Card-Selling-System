@@ -1,0 +1,56 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Thanh toán đơn hàng{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5 text-center">
+            <div class="card shadow border-0">
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="text-success fw-bold mb-1">THANH TOÁN ĐƠN HÀNG</h3>
+                    <p class="text-muted small">Mã đơn: #{{ order.id }}</p>
+
+                    <div class="alert alert-warning d-inline-block px-4 py-2 mt-2 mb-4 border-warning">
+                        Thời gian còn lại: <span class="fw-bold fs-4 text-danger" id="timer">05:00</span>
+                    </div>
+
+                    <div class="qr-container mb-4">
+                        <p class="text-muted mb-2">Quét mã QR dưới đây bằng App Ngân hàng</p>
+                        <img src="https://img.vietqr.io/image/MB-0123456789-compact2.png?amount={{ order.final_amount }}&addInfo=Thanh toan don {{ order.id }}&accountName=SHOP THE CAO"
+                             class="img-fluid border rounded shadow-sm p-2" style="max-width: 250px;" alt="Mã QR Thanh toán">
+                    </div>
+
+                    <ul class="list-group list-group-flush border rounded text-start mb-4">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Số tiền:</span>
+                            <strong class="text-danger fs-5">{{ "{:,.0f}".format(order.final_amount) }} VNĐ</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Nội dung CK:</span>
+                            <strong class="text-primary">Thanh toan don {{ order.id }}</strong>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex justify-content-center align-items-center text-primary mb-2">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        <span class="fst-italic">Hệ thống đang tự động chờ nhận tiền...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 text-center">
+                <button id="btn-confirm-pay" class="btn btn-success btn-lg w-100 fw-bold shadow-sm">
+                    <i class="fas fa-check-circle me-1"></i> XÁC NHẬN ĐÃ CHUYỂN KHOẢN
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    window.INITIAL_TIME_LEFT = {{ time_left }};
+</script>
+<script src="{{ url_for('static', filename='js/payment.js') }}"></script>
+{% endblock %}

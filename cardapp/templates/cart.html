@@ -5,18 +5,24 @@
 {% block content %}
 
 <h1 class="text-success text-center mt-2">GIỎ HÀNG</h1>
+
 <div class="d-flex justify-content-end mb-2">
     <div class="bg-light border rounded shadow-sm px-3 py-2 d-inline-flex align-items-center" style="font-size: 0.85rem;">
         <span class="fw-bold text-secondary me-3"><i class="fas fa-info-circle text-primary me-1"></i> Hạn mức đã chọn:</span>
 
-        {# Logic đếm Jinja2 (vẫn giữ nguyên) #}
         {% set t10, t5, t3 = [0], [0], [0] %}
-        {% for c in session['cart'].values() %}
-            {% if c.price <= 30000 %}{% set _ = t10.append(t10.pop() + c.quantity) %}
-            {% elif c.price <= 300000 %}{% set _ = t5.append(t5.pop() + c.quantity) %}
-            {% else %}{% set _ = t3.append(t3.pop() + c.quantity) %}
-            {% endif %}
-        {% endfor %}
+
+        {% if session.get('cart') %}
+            {% for c in session.get('cart').values() %}
+                {% if c.price <= 30000 %}
+                    {% set _ = t10.append(t10.pop() + c.quantity) %}
+                {% elif c.price <= 300000 %}
+                    {% set _ = t5.append(t5.pop() + c.quantity) %}
+                {% else %}
+                    {% set _ = t3.append(t3.pop() + c.quantity) %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
 
         <div class="d-flex gap-3">
             <span>&le;30K: <strong id="tier-10-val" class="{{ 'text-danger' if t10[0] >= 10 else 'text-dark' }}">{{ t10[0] }}/10</strong></span>
@@ -26,7 +32,8 @@
     </div>
 </div>
 
-{% if 'cart' in session and session['cart'] %}
+{# 3. HIỂN THỊ DANH SÁCH GIỎ HÀNG #}
+{% if session.get('cart') and session['cart'] %}
 <table class="table">
     <thead class="table-light">
     <tr>
@@ -70,21 +77,19 @@
         </td>
     </tr>
     {% endfor %}
-
     </tbody>
 </table>
 
 <div class="alert alert-info d-flex justify-content-between align-items-center">
     <div>
         <h5 class="mb-1">Tổng số lượng thẻ: <strong class="cart-counter">{{ cart_stats.total_quantity }}</strong></h5>
-        <h4 class="mb-0">Tạm tính: <strong class="cart-amount text-danger">{{ "{:,.0f}".format(cart_stats.total_amount)
-            }}</strong> VNĐ</h4>
+        <h4 class="mb-0">Tạm tính: <strong class="cart-amount text-danger">{{ "{:,.0f}".format(cart_stats.total_amount) }}</strong> VNĐ</h4>
     </div>
 </div>
 
 {% if current_user.is_authenticated %}
 <div class="text-end mt-3 mb-5">
-    <a href="/checkout" class="btn btn-success btn-lg px-5 fw-bold">TIẾP TỤC THANH TOÁN</a>
+    <a href="/pay" class="btn btn-success btn-lg px-5 fw-bold">TIẾP TỤC THANH TOÁN</a>
 </div>
 {% else %}
 <div class="alert alert-warning mt-3 text-center">
@@ -94,7 +99,7 @@
 
 {% else %}
 <div class="alert alert-warning mt-4 text-center">
-    Không có sản phẩm trong giỏ hoặc giỏ đã thanh toán! <br>
+    Giỏ hàng của bạn đang trống! <br>
     <a href="/" class="btn btn-primary mt-2">Quay lại mua hàng</a>
 </div>
 {% endif %}

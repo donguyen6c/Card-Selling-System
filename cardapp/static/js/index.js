@@ -223,7 +223,6 @@ function addToCart(id, name, price, cardType, quantity = 1) {
         }
     })
     .catch(err => {
-        console.error("Lỗi:", err);
-        alert("Có lỗi xảy ra, vui lòng thử lại sau!");
+        alert("Bạn chưa đăng nhập");
     });
 }

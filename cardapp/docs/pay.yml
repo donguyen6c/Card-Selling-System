@@ -1,0 +1,40 @@
+tags:
+  - Pay
+summary: Xử lý thanh toán đơn hàng
+description: Lấy giỏ hàng và mã giảm giá từ Session để tạo hóa đơn và thanh toán. Yêu cầu đăng nhập.
+parameters:
+  - in: body
+    name: body
+    required: false
+    description: Lựa chọn phương thức thanh toán
+    schema:
+      type: object
+      properties:
+        payment_method:
+          type: string
+          description: Phương thức thanh toán (mặc định là momo)
+          enum: [momo, bank]
+          example: "momo"
+responses:
+  200:
+    description: Thanh toán thành công
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+  400:
+    description: Lỗi do giỏ hàng trống
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+  401:
+    description: Người dùng chưa đăng nhập
+  500:
+    description: Lỗi hệ thống trong quá trình tạo hóa đơn

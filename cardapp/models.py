@@ -91,15 +91,18 @@ class Discount(BaseModel):
     def __str__(self):
         return self.code
 
+class ReceiptStatus(PyEnum):
+    PENDING = 1
+    PAID = 2
+    CANCELLED = 3
 
 class Receipt(BaseModel):
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
     created_date = Column(DateTime, default=datetime.now)
     total_amount = Column(Float, default=0)
     final_amount = Column(Float, default=0)
-
+    status = Column(Enum(ReceiptStatus), default=ReceiptStatus.PENDING)
     discount_id = Column(Integer, ForeignKey(Discount.id), nullable=True)
-
     details = relationship('ReceiptDetails', backref='receipt', lazy=True)
     cards_sold = relationship('Card', backref='sold_receipt', lazy=True)
 
