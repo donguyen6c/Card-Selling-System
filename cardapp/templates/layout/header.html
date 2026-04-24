@@ -10,19 +10,19 @@
 
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" href="/">Trang chủ</a>
+          <a class="nav-link {% if request.path == '/' %}active fw-bold{% endif %}" href="/">Trang chủ</a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link text-warning fw-bold" href="/promotion">Khuyến mãi</a>
+          <a class="nav-link text-warning {% if request.path == '/promotion' %}active fw-bold{% endif %}" href="/promotion">Khuyến mãi</a>
         </li>
 
         {% if current_user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link" href="/users/current-user/transactions">Lịch sử giao dịch</a>
+          <a class="nav-link {% if request.path == '/users/current-user/transactions' %}active fw-bold{% endif %}" href="/users/current-user/transactions">Lịch sử giao dịch</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/users/current-user/inventory">Kho thẻ đã mua</a>
+          <a class="nav-link {% if request.path == '/users/current-user/inventory' %}active fw-bold{% endif %}" href="/users/current-user/inventory">Kho thẻ đã mua</a>
         </li>
         {% endif %}
       </ul>

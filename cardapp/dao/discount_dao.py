@@ -75,7 +75,3 @@ def check_discount(code, cart):
         'message': "Áp dụng mã giảm giá thành công!",
         'discount_id': discount.id
     }
-
-def load_discounts():
-    return Discount.query.filter(Discount.active == True).all()
-

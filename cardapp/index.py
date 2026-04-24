@@ -1,7 +1,7 @@
 import re
 from flask import Flask, jsonify, request, redirect, render_template, session
 from flasgger import Swagger, swag_from
-from cardapp.apis import carts_api, auth_api, pay_api
+from cardapp.apis import carts_api, auth_api, pay_api, inven_api, history_api
 from cardapp import dao, login, app, utils
 from cardapp.models import CardType
 
@@ -44,9 +44,10 @@ app.register_blueprint(auth_api.auth_bp)
 app.register_blueprint(carts_api.carts_api)
 
 app.register_blueprint(pay_api.pay_api)
-app.register_blueprint(inven_bp)
 
-app.register_blueprint(history_bp)
+app.register_blueprint(history_api.history_bp)
+
+app.register_blueprint(inven_api.inven_bp)
 
 swagger = Swagger(app, config=swagger_config, template=template)
 

@@ -1,4 +1,4 @@
-from cardapp.models import Category, Product, Banner, Card
+from cardapp.models import Category, Product, Banner, Card, Discount
 from sqlalchemy import func
 from cardapp import db
 
@@ -25,3 +25,6 @@ def count_product_by_cate():
             .join(Card, Card.product_id == Product.id)
             .filter(Card.is_sold == False)
             .group_by(Category.id).all())
+
+def load_discounts():
+    return Discount.query.filter(Discount.active == True).all()

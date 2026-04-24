@@ -2,7 +2,7 @@ from cardapp.dao.discount_dao import check_discount
 from cardapp.models import Receipt, ReceiptDetails, Discount, Card, DiscountType, Product, ReceiptStatus
 from cardapp import db, utils
 from datetime import datetime
-from cardapp.utils import TRANSACTIONS_PAGE_SIZE
+from cardapp.utils import TRANSACTIONS_PAGE_SIZE, stats_cart
 from cardapp.utils import CARD_DETAILS_PAGE_SIZE
 
 def get_receipts_by_user(user_id, from_date=None, to_date=None, page=1, per_page=TRANSACTIONS_PAGE_SIZE):

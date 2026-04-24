@@ -58,6 +58,13 @@ class DiscountView(AdminModelView):
 
     form_excluded_columns = ['receipts']
 
+    form_args = {
+        'applied_card_type': {
+            'allow_blank': True,
+            'blank_text': 'Tất cả'
+        }
+    }
+
     form_widget_args = {
         'used_count': {
             'readonly': True
