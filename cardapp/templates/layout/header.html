@@ -1,37 +1,40 @@
-<nav class="navbar navbar-expand-lg bg-dark navbar-dark shadow-sm">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold text-uppercase" href="/">CaoThe Website</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom border-primary border-3 py-2">
+  <div class="container-fluid px-3">
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+    <a class="navbar-brand fw-bold fs-4" href="/">
+      <span class="text-primary">CAOTHE</span><span class="text-dark">STORE</span>
+    </a>
+
+    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
 
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 fw-medium">
         <li class="nav-item">
-          <a class="nav-link {% if request.path == '/' %}active fw-bold{% endif %}" href="/">Trang chủ</a>
+          <a class="nav-link px-3 {% if request.path == '/' %}active text-primary fw-bold{% else %}text-secondary{% endif %}" href="/">Trang chủ</a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link text-warning {% if request.path == '/promotion' %}active fw-bold{% endif %}" href="/promotion">Khuyến mãi</a>
+          <a class="nav-link px-3 {% if request.path == '/promotion' %}active text-primary fw-bold{% else %}text-secondary{% endif %}" href="/promotion">Khuyến mãi</a>
         </li>
 
         {% if current_user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link {% if request.path == '/users/current-user/transactions' %}active fw-bold{% endif %}" href="/users/current-user/transactions">Lịch sử giao dịch</a>
+          <a class="nav-link px-3 {% if request.path == '/users/current-user/transactions' %}active text-primary fw-bold{% else %}text-secondary{% endif %}" href="/users/current-user/transactions">Lịch sử giao dịch</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {% if request.path == '/users/current-user/inventory' %}active fw-bold{% endif %}" href="/users/current-user/inventory">Kho thẻ đã mua</a>
+          <a class="nav-link px-3 {% if request.path == '/users/current-user/inventory' %}active text-primary fw-bold{% else %}text-secondary{% endif %}" href="/users/current-user/inventory">Kho thẻ đã mua</a>
         </li>
         {% endif %}
       </ul>
 
       <ul class="navbar-nav ms-auto align-items-center">
-        <li class="nav-item me-3 mb-2 mb-lg-0">
-          <a class="btn btn-outline-success position-relative" href="/carts">
+        <li class="nav-item me-4 mb-2 mb-lg-0">
+          <a class="btn btn-primary px-4 position-relative rounded-pill shadow-sm" href="/carts">
             &#128722; Giỏ hàng
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-counter">
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-2 border-white">
               {{ cart_stats.total_quantity if cart_stats else 0 }}
             </span>
           </a>
@@ -39,22 +42,22 @@
 
         {% if current_user.is_authenticated %}
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle d-flex align-items-center text-light" href="#" role="button" data-bs-toggle="dropdown">
-            <img src="{{ current_user.avatar }}" class="rounded-circle me-2" width="30" height="30" style="object-fit: cover;" alt="Avatar" />
-            Xin chào, {{ current_user.username }}
+          <a class="nav-link dropdown-toggle d-flex align-items-center text-dark" href="#" role="button" data-bs-toggle="dropdown">
+            <img src="{{ current_user.avatar }}" class="rounded-circle me-2 border" width="36" height="36" style="object-fit: cover;" alt="Avatar" />
+            <span class="fw-medium">{{ current_user.username }}</span>
           </a>
-          <ul class="dropdown-menu dropdown-menu-end shadow">
-            <li><a class="dropdown-item" href="/users/current-user">Thông tin tài khoản</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="/logout">Đăng xuất</a></li>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-3 rounded-3">
+            <li><a class="dropdown-item py-2 text-secondary" href="/users/current-user">Thông tin tài khoản</a></li>
+            <li><hr class="dropdown-divider m-0"></li>
+            <li><a class="dropdown-item text-danger py-2 fw-medium" href="/logout">Đăng xuất</a></li>
           </ul>
         </li>
         {% else %}
-        <li class="nav-item">
-          <a class="nav-link text-light" href="/login">Đăng nhập</a>
+        <li class="nav-item me-3">
+          <a class="nav-link text-secondary fw-medium" href="/login">Đăng nhập</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-info" href="/register">Đăng ký</a>
+          <a class="btn btn-outline-primary fw-medium rounded-pill px-4" href="/register">Đăng ký</a>
         </li>
         {% endif %}
       </ul>
