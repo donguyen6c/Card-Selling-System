@@ -1,6 +1,7 @@
 import dns.resolver
 import re
 
+TRANSACTIONS_PAGE_SIZE = 1
 CARD_DETAILS_PAGE_SIZE = 2
 
 def validate_email_domain(email):

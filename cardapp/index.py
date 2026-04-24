@@ -20,6 +20,7 @@ swagger_config = {
     "specs_route": "/docs",
 }
 
+
 template = {
     "swagger": "2.0",
     "info": {
@@ -43,6 +44,8 @@ app.register_blueprint(auth_api.auth_bp)
 app.register_blueprint(carts_api.carts_api)
 
 app.register_blueprint(inven_bp)
+
+app.register_blueprint(history_bp)
 
 swagger = Swagger(app, config=swagger_config, template=template)
 
