@@ -12,7 +12,7 @@ carts_api = Blueprint('carts', __name__)
 @carts_api.route('/carts', methods=['GET'])
 def cart_view():
     if not current_user.is_authenticated:
-        return redirect('/login?next=/checkout')
+        return redirect('/login?next=/carts')
     cart = session.get('cart', {})
     cart_stats = utils.stats_cart(cart)
     return render_template('cart.html', cart_stats=cart_stats)
