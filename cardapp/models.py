@@ -38,6 +38,8 @@ class User(BaseModel, UserMixin):
     user_role = Column(Enum(UserRole), default=UserRole.USER)
 
     receipts = relationship('Receipt', backref='user', lazy=True)
+    __tablename__ = 'user'
+    __table_args__ = {'extend_existing': True}
 
 class Category(BaseModel):
     name = Column(String(50), unique=True, nullable=False)
