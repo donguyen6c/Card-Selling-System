@@ -1,5 +1,6 @@
 # cardapp/apis/history_api.py
 import re
+from datetime import datetime
 
 from flasgger import swag_from
 from flask import Blueprint, render_template, redirect, request
@@ -20,6 +21,9 @@ def history_view():
     from_date = request.args.get('from_date')
     to_date = request.args.get('to_date')
     page = request.args.get('page', 1, type=int)
+
+    if not to_date:
+        to_date = datetime.now().strftime('%Y-%m-%d')
 
     receipts = dao.get_receipts_by_user(
         user_id=current_user.id,
