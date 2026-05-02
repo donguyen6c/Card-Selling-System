@@ -20,7 +20,7 @@ def mock_admin():
 
 @pytest.fixture
 def mock_user():
-    user = User(username="user", user_role=UserRole.USER)
+    user = User(username="username123", user_role=UserRole.USER)
     with patch('flask_login.utils._get_user', return_value=user):
         yield user
 

@@ -57,9 +57,6 @@ def apply_discount_api():
             "discount_amount": 0
         }), 400
 
-payment_subject = PaymentSubject()
-payment_subject.attach(EmailNotificationObserver())
-
 
 @pay_api.route('/pay', methods=['POST'])
 @login_required
@@ -101,7 +98,7 @@ def pay_process():
     except Exception as ex:
         import traceback
         traceback.print_exc()
-        return jsonify({"status": "error", "message": str(ex)}), 500
+        return jsonify({"status": "error", "message": str(ex)}), 400
 
 
 @pay_api.route('/payment', methods=['GET'])
@@ -130,6 +127,8 @@ def payment_page():
 
     return render_template('payment.html', order=order, time_left=time_left)
 
+payment_subject = PaymentSubject()
+payment_subject.attach(EmailNotificationObserver())
 
 @pay_api.route('/payment', methods=['POST'])
 @login_required
