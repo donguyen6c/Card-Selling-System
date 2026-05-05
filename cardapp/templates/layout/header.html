@@ -35,7 +35,7 @@
           <a class="btn btn-primary px-4 position-relative rounded-pill shadow-sm" href="/carts">
             &#128722; Giỏ hàng
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-2 border-white cart-counter">
-              {{ cart_stats.total_quantity if cart_stats else 0 }}
+              {{ cart_stats.total_quantity if (current_user.is_authenticated and cart_stats) else 0 }}
             </span>
           </a>
         </li>
