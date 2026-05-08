@@ -93,7 +93,7 @@ def profile_view():
     avatar_file = request.files.get('avatar')
 
     try:
-        dao.update_profile(current_user.id, name, password, email, avatar_file)
+        dao.update_profile(current_user.id, name, email, avatar_file)
         return jsonify({
             "status": "success",
             "msg": "Cập nhật thông tin thành công!",
