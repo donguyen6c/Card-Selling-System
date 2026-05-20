@@ -5,10 +5,17 @@ TRANSACTIONS_PAGE_SIZE = 4
 CARD_DETAILS_PAGE_SIZE = 4
 
 def validate_email_domain(email):
+    if not email:
+        raise ValueError("Thiếu trường email")
+
+    email = email.strip()
+
     email = email.strip()
     regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     if not email or not re.match(regex, email):
         raise ValueError("Email không đúng định dạng!")
+
+
 
     domain = email.split('@')[-1]
     try:

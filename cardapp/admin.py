@@ -146,6 +146,10 @@ class DiscountView(AdminModelView):
             raise ValueError("LỖI: Giới hạn lượt dùng của mã (Usage Limit) phải lớn hơn 0!")
 
     def on_model_delete(self, model):
+        if model.used_count > 0:
+            raise ValueError(
+                f"TỪ CHỐI XÓA: Mã '{model.code}' đã có khách hàng sử dụng"
+            )
 
         if len(model.receipts) > 0:
             has_pending = any(r.status.name == 'PENDING' for r in model.receipts if hasattr(r, 'status'))

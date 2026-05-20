@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from unittest.mock import patch
 from datetime import datetime, timedelta
@@ -5,6 +7,7 @@ from cardapp.models import Discount, DiscountType, User, UserRole
 from cardapp.admin import DiscountView
 from cardapp import db
 from cardapp.test.test_base import test_app, test_session
+
 
 @pytest.fixture
 def view(test_session):
@@ -77,4 +80,34 @@ def test_add_discount_quantity_logic(test_app, view, mock_admin):
         with pytest.raises(ValueError, match="không được nhỏ hơn tối thiểu"):
             view.on_model_change(None, model, is_created=True)
 
+
+def test_add_discount_invalid_usage_limit(test_app, view, mock_admin):
+    with test_app.test_request_context():
+        model = Discount(
+            code="USAGE_INVALID",
+            value=10,
+            discount_type=DiscountType.PERCENTAGE,
+            usage_limit=0,
+            min_quantity=1,
+            max_quantity=5,
+            start_date=datetime.now(),
+            end_date=datetime.now() + timedelta(days=1)
+        )
+
+        with pytest.raises(ValueError, match=re.escape("Giới hạn lượt dùng của mã")):
+            view.on_model_change(None, model, is_created=True)
+
+
+def test_add_discount_invalid_min_quantity(test_app, view, mock_admin):
+    with test_app.test_request_context():
+        model = Discount(
+            code="MINQ_INVALID",
+            value=10,
+            min_quantity=0,
+            max_quantity=5,
+            end_date=datetime.now() + timedelta(days=1)
+        )
+
+        with pytest.raises(ValueError, match="Số lượng mua tối thiểu ít nhất là 1!"):
+            view.on_model_change(None, model, is_created=True)
 

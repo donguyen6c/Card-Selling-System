@@ -44,13 +44,26 @@ def sample_discounts(test_session):
         used_count=5,
         active=True
     )
+    d4 = Discount(
+            code="fixedphonediscount",
+            description="Giảm giá 5k cho",
+            discount_type=DiscountType.FIXED_AMOUNT,
+            value=5000,
+            start_date=datetime.now() - timedelta(days=1),
+            end_date=datetime.now() + timedelta(days=1),
+            min_quantity=1,
+            usage_limit=5,
+            used_count=0,
+            active=True
+        )
 
-    test_session.add_all([d1, d2, d3])
+    test_session.add_all([d1, d2, d3, d4])
     test_session.commit()
     return {
         "game_code": d1.code,
         "expired_code": d2.code,
-        "full_code": d3.code
+        "full_code": d3.code,
+	"fixed_phone_code": d4.code
     }
 
 def test_discount_empty_cart(test_session, sample_discounts):
@@ -107,5 +120,16 @@ def test_discount_success_percentage(test_session, sample_discounts):
 
     assert result['success'] is True
     assert result['discount_amount'] == 40000
+    assert result['message'] == "Áp dụng mã giảm giá thành công!"
+
+
+def test_discount_success_fixed_amount(test_session, sample_discounts):
+    cart = {
+        "1": {"id": 1, "name": "Mobi", "price": 100000, "quantity": 2, "card_type": "phone"}
+    }
+    result = check_discount(sample_discounts["fixed_phone_code"], cart)
+
+    assert result['success'] is True
+    assert result['discount_amount'] == 5000
     assert result['message'] == "Áp dụng mã giảm giá thành công!"
 

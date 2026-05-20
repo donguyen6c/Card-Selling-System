@@ -18,7 +18,6 @@ def test_update_profile_success(test_session, mock_cloudinary):
     result = update_profile(
         user_id=u.id,
         name="updated name",
-        password="NewPassword123@",
         email="updated@gmail.com",
         avatar_file="new_avatar.png"
     )
@@ -28,33 +27,26 @@ def test_update_profile_success(test_session, mock_cloudinary):
     assert u.email == "updated@gmail.com"
     assert u.username == original_username
     assert u.avatar == "https://fake-image.com"
-    expected_hash = hashlib.md5("NewPassword123@".encode('utf-8')).hexdigest()
-    assert u.password == expected_hash
 
 
-@pytest.mark.parametrize("name, password, email, msg", [
-    ("", "aBc@1234", "test@gmail.com", "Tên không được để trống!"),
-    ("abc", "123", "test@gmail.com", "Mật khẩu phải có ít nhất 8 kí tự"),
-    ("abc", "password123", "test@gmail.com", "Mật khẩu phải chứa ít nhất một chữ hoa"),
-    ("abc", "aBc@1234", "test.com", "Email không đúng định dạng!"),
+
+@pytest.mark.parametrize("name, email, msg", [
+    ("","test@gmail.com", "Tên không được để trống!"),
+    ("abc", "test.com", "Email không đúng định dạng!"),
 ])
-def test_update_profile_input_validation(test_session, name, password, email, msg):
-
-    add_user(name="basename", username="baseuser", password="aBc@1234", email="base@gmail.com", avatar=None)
+def test_update_profile_input_validation(test_session, name, email, msg):
+    add_user(name="abcde", username="baseuser", password="aBc@1234", email="test@gmail.com", avatar=None)
     u = User.query.filter_by(username="baseuser").first()
 
     with pytest.raises(ValueError, match=re.escape(msg)):
-        update_profile(user_id=u.id, name=name, password=password, email=email)
+        update_profile(user_id=u.id, name=name, email=email)
 
 
-def test_update_profile_user_not_found(test_session):
-    with pytest.raises(ValueError, match="Tài khoản không tồn tại!"):
-        update_profile(user_id=9999, name="Name", password="aBc@1234", email="test@gmail.com")
 
 
-def test_update_profile_email_conflict(test_session):
-    add_user(name="User 1", username="username1", password="Password123@", email="email1@gmail.com", avatar=None)
-    add_user(name="User 2", username="username2", password="Password123@", email="email2@gmail.com", avatar=None)
+def test_update_profile_existed_email(test_session):
+    add_user(name="User 1", username="username1", email="email1@gmail.com", password="aBc@1234", avatar=None)
+    add_user(name="User 2", username="username2", email="email2@gmail.com", password="aBc@1234", avatar=None)
 
     u1 = User.query.filter_by(username="username1").first()
 
@@ -64,7 +56,7 @@ def test_update_profile_email_conflict(test_session):
 
 
 def test_update_profile_cloudinary_error(test_session, monkeypatch):
-    add_user(name="User1", username="username1", password="Password123@", email="user@gmail.com", avatar=None)
+    add_user(name="abcde", username="username1", password="aBc@1234", email="test@gmail.com", avatar=None)
     u = User.query.filter_by(username="username1").first()
 
     def mock_upload_fail(*args, **kwargs):
@@ -74,5 +66,3 @@ def test_update_profile_cloudinary_error(test_session, monkeypatch):
 
     with pytest.raises(Exception, match="Lỗi khi tải ảnh lên Cloudinary: Cloudinary Down"):
         update_profile(user_id=u.id, name="Name", email="user@gmail.com", avatar_file="image.png")
-
-

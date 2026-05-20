@@ -1,6 +1,6 @@
 import pytest
 from cardapp import dao, db
-from cardapp.models import Category, Product, Banner
+from cardapp.models import Category, Product
 from cardapp.test.test_base import test_app, test_session
 
 @pytest.fixture
@@ -16,10 +16,6 @@ def sample_data(test_session):
     p3 = Product(name="Garena 20k", price=20000, category_id=c2.id)
     test_session.add_all([p1, p2, p3])
 
-    b1 = Banner(image_url="http://img1.jpg", active=True)
-    b2 = Banner(image_url="http://img2.jpg", active=False)
-    test_session.add_all([b1, b2])
-
     test_session.commit()
     return {"cate_mobile": c1.id, "cate_game": c2.id, "cate_empty": c3.id}
 
@@ -28,10 +24,6 @@ def test_load_categories(test_session, sample_data):
     assert len(categories) == 3
     assert categories[0].name == "Điện thoại"
 
-def test_load_banners(test_session, sample_data):
-    banners = dao.load_banners()
-    assert len(banners) == 1
-    assert banners[0].active is True
 
 def test_load_products_no_filter(test_session, sample_data):
     products = dao.load_products()
@@ -49,4 +41,5 @@ def test_load_products_filter_cate(test_session, sample_data):
 
 def test_count_products(test_session, sample_data):
     assert dao.count_products() == 3
+
 

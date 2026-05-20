@@ -41,7 +41,7 @@ def test_add_receipt_out_of_stock(test_session, sample_data):
             "quantity": 4
         }
     }
-    with pytest.raises(Exception, match=f"Sản phẩm '{sample_data['product_name']}' chỉ còn 3 thẻ"):
+    with pytest.raises(Exception, match=f"Sản phẩm '{sample_data['product_name']}' chỉ còn 3 thẻ. Vui lòng giảm số lượng!"):
         dao.add_receipt(user_id=sample_data["user_id"], cart=cart)
 
 

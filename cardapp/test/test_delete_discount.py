@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import patch
 from datetime import datetime, timedelta
-from cardapp.models import Discount, DiscountType, User, UserRole
+from cardapp.models import Discount, User, UserRole
 from cardapp.admin import DiscountView
 from cardapp import db
-from cardapp.test.base import test_app, test_session
+from cardapp.test.test_base import test_app, test_session
 
 @pytest.fixture
 def view(test_session):
@@ -57,7 +57,5 @@ def test_delete_discount_success(test_app, test_session, view, mock_admin):
     with test_app.test_request_context():
         model = Discount(code="CLEAN_CODE", used_count=0)
         model.receipts = []
-        try:
-            view.on_model_delete(model)
-        except Exception as e:
-            pytest.fail(f"Không nên báo lỗi khi xóa mã sạch: {e}")
+        view.on_model_delete(model)
+
