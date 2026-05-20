@@ -40,7 +40,7 @@ def sample_data(test_session):
         ]
     }
 
-# Test với 1 sản phẩm
+
 def test_add_to_cart_single(test_client, sample_data):
     u = sample_data["user"]
     p1 = sample_data["products"][0]
@@ -63,7 +63,7 @@ def test_add_to_cart_single(test_client, sample_data):
             assert 'cart' in sess
             assert str(p1["id"]) in sess['cart']
 
-# Test với nhiều sản phẩm
+
 def test_add_to_cart_multiple(test_client, sample_data):
     u = sample_data["user"]
     p1 = sample_data["products"][0]
@@ -243,3 +243,4 @@ def test_delete_cart(test_client, sample_data):
         data = res.get_json()
         assert data['status'] == 'success'
         assert data['total_quantity'] == 0
+

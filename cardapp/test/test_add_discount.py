@@ -32,7 +32,7 @@ def test_add_discount_security(test_app, view, mock_user):
             view.on_model_change(None, model, is_created=True)
 
 
-def test_add_discount_duplicate(test_app, test_session, view, mock_admin):
+def test_add_discount_existed_code(test_app, test_session, view, mock_admin):
     with test_app.test_request_context():
         d1 = Discount(code="SALE10", value=10, discount_type=DiscountType.PERCENTAGE,
                       end_date=datetime.now() + timedelta(days=1))
