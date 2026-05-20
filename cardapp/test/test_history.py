@@ -49,8 +49,8 @@ def test_load_discounts(test_session, sample_data):
 def test_get_receipts_by_user(test_session, sample_data):
     receipts = dao.get_receipts_by_user(user_id=sample_data)
 
-    assert len(receipts) == 2
-    assert receipts[0].created_date >= receipts[1].created_date
+    assert len(receipts.items) == 2
+    assert receipts.items[0].created_date >= receipts.items[1].created_date
 
 
 def test_get_cards_by_user_no_filter(test_session, sample_data):

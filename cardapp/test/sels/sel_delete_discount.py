@@ -1,5 +1,4 @@
 from selenium.webdriver.common.alert import Alert
-from cardapp.test.sels.pages.AdminPage import AdminPage
 from cardapp.test.sels.pages.LoginPage import LoginPage
 from cardapp.test.test_base import driver
 from selenium.webdriver.common.by import By
