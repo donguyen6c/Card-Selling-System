@@ -10,7 +10,7 @@ const countdown = setInterval(() => {
     if (timeLeft <= 0) {
         clearInterval(countdown);
         alert("Đã hết thời gian thanh toán. Đơn hàng của bạn đã bị hủy!");
-        window.location.href = "/cart";
+        window.location.href = "/";
     }
     timeLeft--;
 }, 1000);
