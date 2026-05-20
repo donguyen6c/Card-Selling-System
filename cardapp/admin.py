@@ -2,7 +2,9 @@ from flask_admin import Admin, AdminIndexView, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user, logout_user
 from flask import redirect, flash
-from wtforms import FileField
+from sqlalchemy.exc import IntegrityError
+from wtforms import FileField, ValidationError
+from sqlalchemy.orm.attributes import get_history
 from datetime import datetime
 from cardapp.models import Category, Product, Card, User, Receipt, Discount, Banner, UserRole, DiscountType
 from cardapp import app, db
@@ -13,11 +15,22 @@ class AdminModelView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRole.ADMIN
 
+class CategoryView(AdminModelView):
+    def handle_view_exception(self, exc):
+        if isinstance(exc, (ValueError, IntegrityError)):
+            flash("LỖI: Không được phép xóa mệnh giá thẻ khỏi nhà mạng. Chỉ có thể thêm!", 'error')
+            return True
+        return super(CategoryView, self).handle_view_exception(exc)
+
+    def on_model_delete(self, model):
+        if model.products and len(model.products) > 0:
+            raise ValueError("LỖI: Nhà mạng này đã liên kết với mệnh giá thẻ, không được xóa!")
 
 class CardView(AdminModelView):
     column_list = ['product', 'serial_number', 'pin_code', 'expiry_date', 'is_sold']
     column_searchable_list = ['serial_number', 'pin_code']
     column_filters = ['is_sold', 'expiry_date']
+    form_excluded_columns = ['sold_receipt', 'is_sold']
     page_size = 50
 
     column_labels = {
@@ -32,13 +45,31 @@ class CardView(AdminModelView):
         'is_sold': lambda v, c, m, p: "Đã bán" if m.is_sold else "Chưa bán"
     }
 
+    def handle_view_exception(self, exc):
+        if isinstance(exc, (ValueError)):
+            flash(str(exc), 'error')
+            return True
+        return super(CardView, self).handle_view_exception(exc)
+
     def on_model_change(self, form, model, is_created):
+        if not is_created:
+            current_status = self.session.query(self.model).get(model.id)
+
+            if current_status and current_status.is_sold:
+                raise ValidationError("Thẻ này đã được bán! Bạn không thể chỉnh sửa.")
+
         if is_created and not model.is_sold:
             model.product.inventory += 1
+
+        if model.expiry_date.date() < datetime.now().date():
+            raise ValidationError("LỖI: Hạn sử dụng không được ở trong quá khứ!")
 
     def on_model_delete(self, model):
         if not model.is_sold:
             model.product.inventory -= 1
+
+        if model.is_sold:
+            raise ValueError("LỖI: Không thể xóa thẻ đã bán! Dữ liệu này cần được giữ lại.")
 
 
 class DiscountView(AdminModelView):
@@ -105,13 +136,6 @@ class DiscountView(AdminModelView):
             if float(model.value) <= 0:
                 raise ValueError("LỖI: Giá trị giảm giá phải lớn hơn 0 VNĐ!")
 
-        start = model.start_date if model.start_date else datetime.now()
-        if model.end_date:
-            if model.end_date <= start:
-                raise ValueError("LỖI: Ngày kết thúc phải sau ngày bắt đầu!")
-            if model.end_date.date() < datetime.now().date():
-                raise ValueError("LỖI: Không được tạo mã hết hạn trong quá khứ!")
-
         if model.min_quantity < 1:
             raise ValueError("LỖI: Số lượng mua tối thiểu ít nhất là 1!")
 
@@ -122,9 +146,6 @@ class DiscountView(AdminModelView):
             raise ValueError("LỖI: Giới hạn lượt dùng của mã (Usage Limit) phải lớn hơn 0!")
 
     def on_model_delete(self, model):
-        if model.used_count > 0:
-            raise ValueError(
-                f"TỪ CHỐI XÓA: Mã '{model.code}' đã có khách hàng sử dụng ({model.used_count} lần). Hãy sửa 'Ngày kết thúc' về quá khứ để vô hiệu hóa mã này thay vì xóa!")
 
         if len(model.receipts) > 0:
             has_pending = any(r.status.name == 'PENDING' for r in model.receipts if hasattr(r, 'status'))
@@ -149,6 +170,45 @@ class BannerView(AdminModelView):
             res = cloudinary.uploader.upload(avatar)
             model.image_url = res.get("secure_url")
 
+class ProductView(AdminModelView):
+    column_list = ['category', 'name', 'price', 'inventory', 'active']
+    column_searchable_list = ['name']
+    column_filters = ['category', 'active']
+    form_excluded_columns = ['cards', 'details']
+
+    column_labels = {
+        'category': 'Nhà mạng',
+        'name': 'Tên mệnh giá',
+        'price': 'Giá bán (VNĐ)',
+        'inventory': 'Tồn kho',
+        'active': 'Đang kinh doanh'
+    }
+
+    form_widget_args = {
+        'inventory': {'readonly': True}
+    }
+
+    def handle_view_exception(self, exc):
+        if isinstance(exc, ValueError):
+            flash(str(exc), 'error')
+            return True
+        return super().handle_view_exception(exc)
+
+    def on_model_change(self, form, model, is_created):
+        if model.price <= 0:
+            raise ValueError("LỖI: Giá bán phải lớn hơn 0!")
+
+    def on_model_delete(self, model):
+        unsold_cards = [c for c in model.cards if not c.is_sold]
+        sold_cards = [c for c in model.cards if c.is_sold]
+
+        if sold_cards:
+            raise ValueError(
+                f"LỖI: Mệnh giá '{model.name}' đã có {len(sold_cards)} thẻ được bán. Không thể xóa!")
+
+        if unsold_cards:
+            raise ValueError(
+                f"LỖI: Mệnh giá '{model.name}' còn {len(unsold_cards)} thẻ chưa bán trong kho. Hãy xóa thẻ trước!")
 
 class MyAdminIndexView(AdminIndexView):
     @expose('/')
@@ -225,8 +285,8 @@ class ReceiptView(AdminModelView):
 
 admin = Admin(app=app, name="Quản Trị Bán Thẻ", index_view=MyAdminIndexView())
 
-admin.add_view(AdminModelView(Category, db.session, name="Nhà mạng"))
-admin.add_view(AdminModelView(Product, db.session, name="Mệnh giá thẻ"))
+admin.add_view(CategoryView(Category, db.session, name="Nhà mạng"))
+admin.add_view(ProductView(Product, db.session, name="Mệnh giá thẻ"))
 admin.add_view(CardView(Card, db.session, name="Kho thẻ"))
 admin.add_view(DiscountView(Discount, db.session, name="Khuyến mãi"))
 admin.add_view(BannerView(Banner, db.session, name="Banner"))
