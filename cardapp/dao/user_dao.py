@@ -58,6 +58,7 @@ def add_user(name, username, password, avatar, email):
         db.session.rollback()
         raise
 
+
 def update_profile(user_id, name, email, avatar_file=None):
     if not name:
         raise ValueError("Tên không được để trống!")
@@ -84,8 +85,8 @@ def update_profile(user_id, name, email, avatar_file=None):
 
     try:
         db.session.commit()
-    except IntegrityError as e:
+    except IntegrityError:
         db.session.rollback()
-        raise e
+        raise
 
     return True

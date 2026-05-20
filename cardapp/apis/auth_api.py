@@ -8,6 +8,7 @@ from werkzeug.exceptions import Conflict
 
 from cardapp import dao
 from cardapp.dao import add_user
+from cardapp.models import UserRole
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -24,8 +25,11 @@ def login_process():
     user = dao.auth_user(username=username, password=password)
     if user:
         login_user(user=user)
+        if user.user_role == UserRole.ADMIN:
+            return redirect('/admin/')
         next_page = request.args.get('next')
         return redirect(next_page if next_page else '/')
+
     else:
         err_msg = "Tên đăng nhập hoặc mật khẩu không chính xác!"
         return render_template('login.html', err_msg=err_msg), 400
@@ -85,6 +89,7 @@ def profile_get():
 def profile_view():
     name = request.form.get('name')
     email = request.form.get('email')
+    password = request.form.get('password')
     avatar_file = request.files.get('avatar')
 
     try:

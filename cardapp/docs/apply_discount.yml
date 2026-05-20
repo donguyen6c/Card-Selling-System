@@ -1,0 +1,44 @@
+tags:
+  - Pay
+summary: Áp dụng mã giảm giá
+description: Gửi mã giảm giá để kiểm tra và lưu vào session giỏ hàng. Yêu cầu người dùng phải đăng nhập.
+parameters:
+  - in: body
+    name: body
+    required: true
+    description: Thông tin mã giảm giá
+    schema:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          description: Mã giảm giá cần áp dụng
+responses:
+  200:
+    description: Áp dụng mã giảm giá thành công
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        discount_amount:
+          type: integer
+          example: 50000
+  400:
+    description: Mã giảm giá không hợp lệ hoặc không đủ điều kiện
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        discount_amount:
+          type: integer
+          example: 0
+  401:
+    description: Người dùng chưa đăng nhập

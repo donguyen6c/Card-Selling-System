@@ -14,9 +14,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'nguyenvancong72033@gmail.com'
-app.config['MAIL_PASSWORD'] = 'gsds nkxm lpeb qepo'
-app.config['MAIL_DEFAULT_SENDER'] = ('CaoThe Website', 'nguyenvancong72033@gmail.com')
+app.config['MAIL_USERNAME'] = 'doly2301a@gmail.com'
+app.config['MAIL_PASSWORD'] = 'cvke qcms wesz yrvi'
+app.config['MAIL_DEFAULT_SENDER'] = ('CaoThe Website', 'doly2301a@gmail.com')
 
 mail = Mail(app=app)
 db = SQLAlchemy(app=app)
@@ -25,3 +25,5 @@ login = LoginManager(app=app)
 cloudinary.config(cloud_name='dfgicbdji',
 api_key='124197697555968',
 api_secret='45n1Ut4C5xt4bdquewTAzc9dcB8')
+
+from cardapp import admin
