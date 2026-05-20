@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from cardapp import utils, db
-from cardapp.models import Receipt, ReceiptDetails, Discount, Card, DiscountType
+from cardapp.models import Receipt, ReceiptDetails, Discount, Card, DiscountType, CardType
+
 
 def check_discount(code, cart):
     fail_res = {'success': False, 'discount_amount': 0, 'message': "", 'discount_id': None}
@@ -26,29 +27,19 @@ def check_discount(code, cart):
         return fail_res
 
     stats = utils.stats_cart(cart)
-    applicable_qty = 0
-    applicable_amount = 0
 
     if discount.applied_card_type:
-        target_type = discount.applied_card_type.value if hasattr(discount.applied_card_type, 'value') else str(
-            discount.applied_card_type)
-        target_type = str(target_type).lower()
+        card_type = discount.applied_card_type
 
-        if 'phone' in target_type:
-            target_type = 'phone'
-        elif 'game' in target_type:
-            target_type = 'game'
-
-        if target_type == 'game':
+        if card_type == CardType.GAME:
             applicable_qty = stats.get('game_quantity', 0)
             applicable_amount = sum([c['price'] * c['quantity'] for c in cart.values() if c.get('card_type') == 'game'])
-        elif target_type == 'phone':
+        else:
             applicable_qty = stats.get('phone_quantity', 0)
-            applicable_amount = sum(
-                [c['price'] * c['quantity'] for c in cart.values() if c.get('card_type') == 'phone'])
+            applicable_amount = sum([c['price'] * c['quantity'] for c in cart.values() if c.get('card_type') == 'phone'])
 
         if applicable_qty == 0:
-            fail_res['message'] = f"Mã này chỉ áp dụng cho thẻ {target_type.upper()}!"
+            fail_res['message'] = f"Mã này chỉ áp dụng cho thẻ {card_type.value.upper()}!"
             return fail_res
     else:
         applicable_qty = stats.get('total_quantity', 0)
