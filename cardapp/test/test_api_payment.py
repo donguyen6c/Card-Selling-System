@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 import pytest
-from cardapp.test.base import test_client, test_app, test_session
+from cardapp.test.test_base import test_client, test_app, test_session
 from cardapp.models import User, Category, Product, Card, Discount, Receipt, ReceiptStatus
 from cardapp import db
 
@@ -280,3 +280,5 @@ def test_full_flow_without_discount(test_client, test_session, sample_data, mock
         res = test_client.post('/payment')
         assert res.status_code == 200
         assert res.get_json()['status'] == 'success'
+
+
