@@ -1,7 +1,7 @@
 import pytest
 from cardapp import dao, db
 from cardapp.models import Category, Product, Banner
-from cardapp.test.base import test_app, test_session
+from cardapp.test.test_base import test_app, test_session
 
 @pytest.fixture
 def sample_data(test_session):

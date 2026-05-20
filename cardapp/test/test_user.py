@@ -1,4 +1,4 @@
-from cardapp.test.base import test_app, test_session,mock_cloudinary
+from cardapp.test.test_base import test_app, test_session,mock_cloudinary
 import pytest
 from cardapp.models import User
 from cardapp.dao import add_user

@@ -1,7 +1,9 @@
 import pytest
 from flask import Flask
 
+from selenium.webdriver.chrome.service import Service
 from cardapp import db
+from selenium import webdriver
 from cardapp.apis import carts_api, pay_api
 
 def create_app():
@@ -38,3 +40,10 @@ def mock_cloudinary(monkeypatch):
         return {'secure_url':'https://fake-image.com'}
 
     monkeypatch.setattr('cloudinary.uploader.upload',fake_upload)
+
+@pytest.fixture
+def driver():
+    service = Service(executable_path='.venv/chromedriver.exe')
+    driver = webdriver.Chrome(service=service)
+    yield driver
+    driver.quit()

@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime, timedelta
 from cardapp import dao, db
 from cardapp.models import User, Category, Product, Card, Receipt, Discount, DiscountType
-from cardapp.test.base import test_app, test_session
+from cardapp.test.test_base import test_app, test_session
 from cardapp.dao.receipt_dao import get_cards_by_user
 
 @pytest.fixture

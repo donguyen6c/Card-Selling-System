@@ -236,3 +236,5 @@ if __name__ == '__main__':
 
         db.session.add_all([discount1, discount2])
         db.session.commit()
+
+

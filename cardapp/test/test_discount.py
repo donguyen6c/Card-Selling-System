@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime, timedelta
 from cardapp.dao.discount_dao import check_discount
 from cardapp.models import Discount, DiscountType
-from cardapp.test.base import test_app, test_session
+from cardapp.test.test_base import test_app, test_session
 
 @pytest.fixture
 def sample_discounts(test_session):

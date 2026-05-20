@@ -2,7 +2,7 @@ import pytest
 from cardapp import dao, db
 from cardapp.models import User, Category, Product, Card, Receipt, ReceiptDetails, ReceiptStatus
 from datetime import datetime, timedelta
-from cardapp.test.base import test_app, test_session, mock_cloudinary
+from cardapp.test.test_base import test_app, test_session, mock_cloudinary
 
 @pytest.fixture
 def sample_data(test_session):

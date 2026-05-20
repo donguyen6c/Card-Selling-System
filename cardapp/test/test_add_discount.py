@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from cardapp.models import Discount, DiscountType, User, UserRole
 from cardapp.admin import DiscountView
 from cardapp import db
-from cardapp.test.base import test_app, test_session
+from cardapp.test.test_base import test_app, test_session
 
 @pytest.fixture
 def view(test_session):
