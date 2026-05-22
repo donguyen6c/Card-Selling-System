@@ -109,8 +109,9 @@ class DiscountView(AdminModelView):
         return super(DiscountView, self).handle_view_exception(exc)
 
     def on_model_change(self, form, model, is_created):
-        if current_user.user_role != UserRole.ADMIN:
-            raise ValueError("LỖI BẢO MẬT: Chỉ Admin mới có quyền thao tác mã giảm giá!")
+        existing = db.session.query(Discount).filter_by(code=model.code).first()
+        if existing and existing.id != model.id:
+            raise ValueError(f"LỖI: Mã giảm giá '{model.code}' đã tồn tại!")
 
         start = model.start_date if model.start_date else datetime.now()
         if model.end_date:
@@ -129,7 +130,7 @@ class DiscountView(AdminModelView):
             if float(model.value) <= 0:
                 raise ValueError("LỖI: Giá trị giảm giá phải lớn hơn 0 VNĐ!")
 
-        if model.min_quantity < 1:
+        if model.min_quantity is not None and model.min_quantity < 1:
             raise ValueError("LỖI: Số lượng mua tối thiểu ít nhất là 1!")
 
         if model.max_quantity and model.max_quantity < model.min_quantity:
