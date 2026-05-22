@@ -19,6 +19,12 @@ def mock_admin():
     with patch('flask_login.utils._get_user', return_value=admin):
         yield admin
 
+@pytest.fixture
+def mock_user():
+    user = User(username="username123", user_role=UserRole.USER)
+    with patch('flask_login.utils._get_user', return_value=user):
+        yield user
+
 
 def test_delete_discount_already_used(test_app, view, mock_admin):
     with test_app.test_request_context():
@@ -58,3 +64,10 @@ def test_delete_discount_success(test_app, test_session, view, mock_admin):
         model = Discount(code="CLEAN_CODE", used_count=0)
         model.receipts = []
         view.on_model_delete(model)
+
+def test_delete_discount_not_admin(test_app, view, mock_user):
+    with test_app.test_request_context():
+        model = Discount(code="SOME_CODE", used_count=0)
+        model.receipts = []
+
+        with pytest.raises(ValueError, match="LỖI BẢO MẬT"): view.on_model_delete(model)
