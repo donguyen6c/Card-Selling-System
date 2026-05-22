@@ -112,13 +112,6 @@ class DiscountView(AdminModelView):
         if current_user.user_role != UserRole.ADMIN:
             raise ValueError("LỖI BẢO MẬT: Chỉ Admin mới có quyền thao tác mã giảm giá!")
 
-        existing = db.session.query(Discount).filter_by(code=model.code).first()
-
-        if existing and (existing is not model):
-
-            if model.id is None or existing.id != model.id:
-                raise ValueError(f"LỖI: Mã giảm giá '{model.code}' đã tồn tại!")
-
         start = model.start_date if model.start_date else datetime.now()
         if model.end_date:
             if model.end_date <= start:
