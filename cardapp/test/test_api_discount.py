@@ -156,3 +156,9 @@ def test_check_discount_exceeds_max_quantity(test_client, sample_data):
         assert res.status_code == 400
         assert data['status'] == 'error'
         assert data['message'] == 'Mã này chỉ áp dụng khi mua tối đa 2 thẻ!'
+
+def test_check_discount_not_logged_in(test_client, sample_data):
+    d1 = sample_data["discounts"][0]
+    res = test_client.post('/pay/discount', json={"code": d1.code})
+
+    assert res.status_code == 401

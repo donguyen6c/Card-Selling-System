@@ -29,10 +29,14 @@ def checkout_view():
     return render_template('checkout.html', cart_stats=cart_stats)
 
 @pay_api.route('/pay/discount', methods=['POST'])
-@login_required
 @swag_from('../docs/apply_discount.yml')
 def apply_discount_api():
-    if not current_user.is_authenticated:
+    try:
+        is_auth = current_user.is_authenticated
+    except Exception:
+        is_auth = False
+
+    if not is_auth:
         return jsonify({"status": "error", "message": "Bạn chưa đăng nhập!"}), 401
 
     code = request.json.get('code')
