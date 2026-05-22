@@ -109,6 +109,9 @@ class DiscountView(AdminModelView):
         return super(DiscountView, self).handle_view_exception(exc)
 
     def on_model_change(self, form, model, is_created):
+        if current_user.user_role != UserRole.ADMIN:
+            raise ValueError("LỖI BẢO MẬT: Chỉ Admin mới có quyền thao tác mã giảm giá!")
+
         existing = db.session.query(Discount).filter_by(code=model.code).first()
         if existing and existing.id != model.id:
             raise ValueError(f"LỖI: Mã giảm giá '{model.code}' đã tồn tại!")
